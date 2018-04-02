@@ -2,6 +2,7 @@
   <div class="search">
     <form class="input" @submit.prevent="search">
       <el-input class="text" placeholder="请输入内容" v-model="searchText"></el-input>
+      <slot name="province"></slot>
       <el-button @click="search" type="primary">搜索</el-button>
     </form>
     <div class="refresh">
@@ -40,7 +41,7 @@ export default {
     .input{
       display:flex;
       .text{
-        min-width:250px;
+        min-width:150px;
         margin-right:15px;
       }
     }

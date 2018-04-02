@@ -1,5 +1,5 @@
 <template>
-  <div class="comboList">
+  <div class="systemuser">
     <head-top></head-top>
     <search>
       <el-button @click="addDate" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
@@ -9,7 +9,7 @@
           element-loading-text="拼命加载中"
         :data="tableData"
         style="width: 100%">
-        <el-table-column type="expand">
+        <!-- <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
               <el-form-item label="套餐详情">
@@ -17,26 +17,22 @@
               </el-form-item>
             </el-form>
           </template>
+        </el-table-column> -->
+        <el-table-column
+          label="编号"
+          prop="number">
         </el-table-column>
         <el-table-column
-          label="套餐名称"
+          label="用户姓名"
           prop="name">
         </el-table-column>
         <el-table-column
-          label="陪驾次数"
-          prop="times">
+          label="联系方式"
+          prop="phone">
         </el-table-column>
         <el-table-column
-          label="套餐价格"
-          prop="price">
-        </el-table-column>
-        <el-table-column
-          label="单次时间"
-          prop="everyTime">
-        </el-table-column>
-        <el-table-column
-          label="车型"
-          prop="car">
+          label="类型"
+          prop="type">
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
@@ -57,23 +53,14 @@
       :visible.sync="dialogVisible"
       width="30%">
       <el-form ref="form" :model="form" class="form" label-width="80px">
-        <el-form-item label="套餐名称">
+        <el-form-item label="用户姓名">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="套餐价格">
+        <el-form-item label="联系方式">
           <el-input v-model="form.price"></el-input>
         </el-form-item>
-        <el-form-item label="陪驾次数">
-          <el-input v-model="form.times"></el-input>
-        </el-form-item>
-        <el-form-item label="单次时间">
+        <el-form-item label="类型">
           <el-input v-model="form.everyTime"></el-input>
-        </el-form-item>
-        <el-form-item label="陪驾车型">
-          <el-input v-model="form.car"></el-input>
-        </el-form-item>
-        <el-form-item label="套餐详情">
-          <el-input type="textarea" v-model="form.detail"></el-input>
         </el-form-item>
       </el-form>
       <div class="footers">
@@ -97,7 +84,7 @@
 import headTop from '@/components/headTop'
 import Search from '@/components/search'
 export default {
-  name:'ComboList',
+  name:'SystemUser',
   components:{
     headTop,
     Search
@@ -164,7 +151,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-  .comboList{
+  .systemuser{
     .table_container{
       padding:0 40px;
       min-height:660px;
