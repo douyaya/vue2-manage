@@ -24,11 +24,11 @@ export default {
   methods:{
     //搜索事件
     search () {
-      console.log(this.searchText)
+      this.$emit('search')
     },
     //刷新
     refresh () {
-      console.log('刷新')
+      this.$emit('refresh')
     }
   }
 }
