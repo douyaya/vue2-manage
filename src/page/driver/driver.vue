@@ -70,6 +70,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search'
+import {getDriver} from '@/api/index.js'
 export default {
   name:'Driver',
   components:{
@@ -101,8 +102,6 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      console.log(this.count)
-      console.log(this.currentPage)
     },
     //获取套餐数据
     getComboData () {

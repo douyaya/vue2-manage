@@ -1,7 +1,7 @@
 <template>
   <div class="comboList">
     <head-top></head-top>
-    <search v-on:search="_search" ref="search" v-on:refresh="_refresh">
+    <search v-on:search="_search" ref="search" v-on:refresh="_search">
       <el-button @click="addDate" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
@@ -91,8 +91,9 @@
           <el-input type="textarea" v-model="form.description"></el-input>
         </el-form-item>
         <el-form-item>
+          <div style="margin:0 0 20px -80px;">上传套餐图片</div>
           <Uploadimg ref="uploadimg">
-            <li class="special" v-show="showImg">
+            <li class="special" v-if="showImg">
               <img class="img" :src="form.picUrl" alt="">
               <div v-show="form.picUrl!=='' && form.picUrl!==undefined" class="delete" @click="operateImage">X</div>
             </li>
@@ -185,12 +186,8 @@ export default {
         }
       })
     },
-    //搜索
+    //搜索或者刷新
     _search () {
-      this._getComboData(this.currentPage,this.$refs.search.searchText)
-    },
-    //刷新
-    _refresh () {
       this._getComboData(this.currentPage,this.$refs.search.searchText)
     },
     //页码改变时触发
@@ -200,14 +197,23 @@ export default {
     },
      //修改数据
     handleEdit (index,val) {
+      this.$refs.uploadimg && (this.$refs.uploadimg.imgList = [])
       val.picUrl !== "" && (this.showImg = true)
       this.form = val
       this.dialogVisible = true
+      this.form.picList = []
+      if (this.form.picId) {
+        this.form.picList[0] = {}
+        this.form.picList[0].id = this.form.picId
+        this.form.picList[0].status = 1
+      }
     },
      //添加数据
     addDate () {
-      this.dialogVisible = true
       this.form= {}
+      this.$refs.uploadimg && (this.$refs.uploadimg.imgList = [])
+      this.form.picList = []
+      this.dialogVisible = true
     },
     //提交修改/添加
     confirmModify (formname) {
@@ -223,22 +229,26 @@ export default {
           if (this.form.id && this.form.picUrl !== "") {
             length++
           }
-          console.log(length)
           if (length !== 1) {
             this.$message({
               type:'info',
               message:'必须上传一张图片'
             })
           } else {
-            console.log()
             if (this.form.picUrl === '' || this.form.picUrl === undefined) {
-              this.form.picList = JSON.stringify(this.$refs.uploadimg.imgList)
-            } else {
-              let arr =[]
-              arr[0] = this.form.picUrl
-              this.form.picList = JSON.stringify(arr[0])
-            }
-            console.log(this.form.picList)
+              console.log('gg')
+              let item = {
+                status:0,
+                picUrl:this.$refs.uploadimg.imgList[0]
+              }
+              console.log(this.form.picList)
+              if (this.form.picList[0] && this.form.picList[0].id) {
+                this.form.picList[1] = item
+              } else {
+                this.form.picList[0] = item
+              }
+              // console.log(this.form)
+            } 
             this.submit()
           }
         } else {
@@ -258,9 +268,13 @@ export default {
           cancelButtonText:'取消',
           type:'warning'
         }).then(() => {
+          this.form.picList = JSON.stringify(this.form.picList)
           modifyCombo(this.form).then(res => {
             if (res.code === '0') {
               _this.dialogVisible = false
+              _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
+              _this.showImg = false
+              console.log(_this.showImg)
               _this.$message({
                 type:'success',
                 message:'操作成功'
@@ -269,15 +283,16 @@ export default {
           })
         })
       } else {
-        // console.log(this.form)
         this.$confirm('是否确认执行该操作？',{
           confirmButtonText:'确定',
           cancelButtonText:'取消',
           type:'warning'
         }).then(() => {
+          this.form.picList = JSON.stringify(this.form.picList)
           addCombo(this.form).then(res => {
             if (res.code === '0') {
               _this.dialogVisible = false
+              _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
               _this.$message({
                 type:'success',
                 message:'操作成功'
@@ -327,8 +342,8 @@ export default {
       min-height:660px;
     }
     .Pagination{
-      padding-left:70%;
-      margin-top:10px;
+      padding-left:75%;
+      margin-top:20px;
     }
     .form{
       padding:10px;
