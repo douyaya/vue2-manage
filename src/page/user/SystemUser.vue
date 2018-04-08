@@ -61,7 +61,7 @@
       :title="title"
       :visible.sync="dialogVisible"
       width="30%"
-      :before-close="handleClose('form')">
+      @close="handleClose('form')">
       <el-form ref="form" :model="form" :rules="rules" class="form" label-width="80px">
         <el-form-item label="真实姓名" prop="realname">
           <el-input v-model="form.realname"></el-input>
@@ -283,9 +283,11 @@ export default {
     },
     //取消
     handleClose (formName) {
-      console.log(this.$refs[formName])
-      this.$refs[formName].resetFields()
-      // this.dialogVisible = false
+      // if (this.$refs[formName] !== undefined) {
+        console.log(this.$refs[formName])
+        this.$refs[formName].resetFields()
+        this.dialogVisible = false
+      // }
     },
     handleCloses () {
 
