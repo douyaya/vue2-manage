@@ -39,3 +39,23 @@ export function setUseStatus (data) {
 export function getDriver (data) {
   return http.post('/driver/getAllDriver.do',data)
 }
+//添加陪驾人
+export function addDriver (data) {
+  return http.post('/driver/addDriver.do',data)
+}
+//删除巡检
+export function deleteDrive (data) {
+  return http.post('/driver/deleteDriver.do',data)
+}
+//获取微信关注者信息
+export function getWxUser (data) {
+  return http.post('/user/getAllWxFollowers.do',data)
+}
+//获取用户信息列表
+export function getUserMsg (data) {
+  return http.post('/user/getAllUsers.do',data)
+}
+//添加用户
+export function addUser (data) {
+  return http.post('/user/saveUsers.do',data)
+}

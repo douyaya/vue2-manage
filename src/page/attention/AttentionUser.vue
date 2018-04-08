@@ -1,16 +1,34 @@
 <template>
   <div class="attention">
     <head-top></head-top>
-    <search>
-    </search>
+    <search v-on:search="_search" ref="search" v-on:refresh="_search"></search>
     <div class="table-container">
       <el-table v-loading="load_data"
           element-loading-text="拼命加载中"
         :data="tableData"
         style="width: 100%">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form label-position="left" inline>
+              <el-form-item label="openId" style="width:40%">
+                <span>{{props.row.openid}}</span>
+              </el-form-item>
+              <el-form-item label="关注时间" style="width:50%">
+                <span>{{props.row.followTime | clearZero}}</span>
+              </el-form-item>
+              <el-form-item label="地址" style="width:50%">
+                <span>{{props.row.driverAddress || props.row.custAddress || ''}}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="编号" width="100px"
+          prop="rowNum">
+        </el-table-column>
         <el-table-column
           label="真实姓名"
-          prop="name">
+          prop="realname">
         </el-table-column>
         <el-table-column
           label="昵称"
@@ -18,11 +36,21 @@
         </el-table-column>
         <el-table-column
           label="联系方式"
-          prop="phone">
+          prop="cellphone">
         </el-table-column>
         <el-table-column
-          label="关注时间"
-          prop="time">
+          label="认证状态">
+          <template slot-scope="props">
+            <span class="status" :class="props.row.authStatus ===1 ? 'status1' : (props.row.authType === '0' ? 'status2' : 'status3')">
+              {{props.row.authStatus === 1 ? '未认证' : (props.row.authType === '0' ? '陪驾' : '客户')}}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="性别">
+          <template slot-scope="props">
+            <span>{{props.row | begender}}</span>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -40,6 +68,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
+import {getWxUser} from '@/api/index.js'
 export default {
   name:'AttentionUser',
   components:{
@@ -49,25 +78,50 @@ export default {
   data () {
     return {
       tableData:[],
-      load_data:false,
-      count:50,
-      currentPage:1
+      load_data:true,
+      count:0,
+      currentPage:1,
+      pageSize:15
+    }
+  },
+  filters:{
+    clearZero (val) {
+      return val.slice(0,val.lastIndexOf('.'))
+    },
+    bestatus (val) {
+      return val.authStatus === 1 ? '未认证' : (val.authType === '0' ? '陪驾' : '客户')
+    },
+    begender (val) {
+      let arr = ['男','女']
+      return (arr[val.driverGender] || arr[val.custGender])
     }
   },
   created () {
-    this.getTableData()
+    this.getTableData(1,'')
   },
   methods:{
-    getTableData () {
-      this.tableData = [
-        {name:'lisi',nickname:'李四',phone:'13456767767',time:'2018-03-12'}
-      ]
+    getTableData (pageNo,name) {
+      let data = {
+        pageNo:pageNo,
+        pageSize:this.pageSize,
+        name:name
+      }
+      console.log(data)
+      getWxUser(data).then(res => {
+        if (res.code === '0') {
+          this.count = res.data.totalRecord
+          this.tableData = res.data.results
+          this.load_data = false
+        }
+      })
     },
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      console.log(this.count)
-      console.log(this.currentPage)
+    },
+    //刷新搜索
+    _search () {
+      this.getTableData(this.currentPage,this.$refs.search.searchText)
     }
   }
 }
@@ -77,6 +131,21 @@ export default {
     .table-container{
       padding:0 40px;
       min-height:660px;
+      .status{
+        display:inline-block;
+        width:50px;
+        color:white;
+        text-align:center;
+        &.status1{
+          background-color:grey;
+        }
+        &.status2{
+          background-color:red;
+        }
+        &.status3{
+          background-color:green;
+        }
+      }
     }
     .Pagination{
       padding-left:70%;
