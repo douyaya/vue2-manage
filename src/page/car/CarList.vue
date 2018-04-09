@@ -2,7 +2,7 @@
   <div class="carList">
     <head-top></head-top>
     <search v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-button @click="addDate" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
+      <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table-container">
       <el-table v-loading="load_data"

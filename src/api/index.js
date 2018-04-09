@@ -59,3 +59,11 @@ export function getUserMsg (data) {
 export function addUser (data) {
   return http.post('/user/saveUsers.do',data)
 }
+//重置密码
+export function setPassword (data) {
+  return http.post('/pwd/reset.do',data)
+}
+//分页获取约车单
+export function getSubscribeOrder (data) {
+  return http.post('/order/getAllApply.do',data)
+}

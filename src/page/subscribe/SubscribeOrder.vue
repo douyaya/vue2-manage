@@ -2,8 +2,11 @@
   <div class="subscribeorder">
     <head-top></head-top>
     <search>
-      <el-input slot="province" class="text" placeholder="请输入陪驾人姓名" v-model="searchText"></el-input>
-      <el-select style="width:100px" v-model="value" placeholder="请选择">
+      <div style="display:flex;" slot="province">
+        <el-input size="small" class="text" placeholder="陪驾人姓名" v-model="searchText"></el-input>
+        <el-input size="small" class="text" placeholder="陪驾人手机号" v-model="searchText"></el-input>
+      </div>
+      <el-select size="small" style="width:100px" v-model="value" placeholder="请选择">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -59,7 +62,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-size="15"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="count">
       </el-pagination>
@@ -69,6 +72,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
+import {getSubscribeOrder} from '@/api/index.js'
 export default {
   name:'SubscribeOrder',
   components:{
@@ -79,8 +83,9 @@ export default {
     return {
       tableData:[],
       load_data:false,
-      count:50,
+      count:0,
       currentPage:1,
+      pageSize:15,
       options:[
         {value:'1',label:'全部'},
         {value:'2',label:'未开始'},
@@ -91,13 +96,24 @@ export default {
     }
   },
   created () {
-    this.getTableData()
+    this.getTableData(1)
   },
   methods:{
-    getTableData () {
-      this.tableData = [
-        {name:'套餐A',person:'李四',price:'300',payStatus:'已支付',car:'荣威',time:'2018-03-12'}
-      ]
+    getTableData (pageNo,name,driveName,driverPhone,operateType) {
+      let data = {
+        pageNo:pageNo,
+        pageSize:this.pageSize,
+        name:name,
+        driverName:driveName,
+        driverPhone:driverPhone,
+        operateType:operateType
+      }
+      console.log(data)
+      getSubscribeOrder(data).then(res => {
+        if (res.code === '0') {
+          this.tableData = res.data.results
+        }
+      })
     },
     //页码改变时触发
     handleCurrentChange (val) {

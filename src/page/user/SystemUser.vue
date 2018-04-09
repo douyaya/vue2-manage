@@ -2,22 +2,13 @@
   <div class="systemuser">
     <head-top></head-top>
     <search v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-button @click="addDate" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
+      <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
       <el-table v-loading="load_data"
           element-loading-text="拼命加载中"
         :data="tableData"
         style="width: 100%">
-        <!-- <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline>
-              <el-form-item label="套餐详情">
-                <span>{{ props.row.detail}}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column> -->
         <el-table-column
           label="编号"
           prop="rowNum">
@@ -47,7 +38,7 @@
                <el-button
               size="small"
               type="primary"
-              @click="handleDelete(scope.$index, scope.row)">重置密码</el-button>
+              @click="setpassword(scope.$index, scope.row)">重置密码</el-button>
             <el-button
               size="small"
               type="danger"
@@ -100,15 +91,19 @@
       :title="titles"
       :visible.sync="dialogVisibles"
       width="30%"
-      :before-close="handleCloses">
+      @close="handleCloses('form1')">
         <el-form ref="form1" :model="form1" :rules="rules1" class="form1" label-width="80px">
           <el-form-item label="密码" prop="passwordsone">
-            <el-input v-model="form1.passwordsone"></el-input>
+            <el-input type="password" v-model="form1.passwordsone"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="passwordstwo">
-            <el-input v-model="form1.passwordstwo"></el-input>
+            <el-input type="password" v-model="form1.passwordstwo"></el-input>
           </el-form-item>
         </el-form>
+        <div class="footers">
+        <el-button @click="handleCloses('form1')">取 消</el-button>
+        <el-button type="primary" @click="confirmModifys('form1')">确 定</el-button>
+      </div>
     </el-dialog>
     <!-- 分页 -->
     <div class="Pagination">
@@ -125,7 +120,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search'
-import {getUserMsg,addUser} from '@/api/index.js'
+import {getUserMsg,addUser,setPassword} from '@/api/index.js'
 import {checkCellphone} from '@/api/utility.js'
 let sha256 = require('js-sha256').sha256
 export default {
@@ -145,6 +140,13 @@ export default {
     let validateCellphone = (rule,value,callback) => {
       if (!checkCellphone(value)) {
         callback(new Error('手机号格式不对'))
+      } else {
+        callback()
+      }
+    }
+    let validatePassword = (rule,value,callback) => {
+      if (value !==this.form1.passwordsone) {
+        callback(new Error('两次密码不一致'))
       } else {
         callback()
       }
@@ -189,7 +191,11 @@ export default {
         ],
         gender:[{type:'number',required:true,message:'必须选择性别',trigger:'blur'}]
       },
-      rules1:{}
+      rules1:{
+        passwordsone:[{required:true,message:'必须填写密码',trigger:'blur'}],
+        passwordstwo:[{validator:validatePassword},
+          {required:true,message:'必须填写密码',trigger:'blur'}]
+      }
     }
   },
   created () {
@@ -231,6 +237,13 @@ export default {
     handleDelete (index,val) {
 
     },
+    //重置密码
+    setpassword (index,val) {
+      console.log(val)
+      this.titles = '修改用户'+val.account+'的密码'
+      this.dialogVisibles = true
+      this.form1.id = val.id
+    },
     //修改数据
     handleEdit (index,val) {
       this.title = '修改用户信息'
@@ -247,23 +260,33 @@ export default {
       let _this = this
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$confirm('是否确认添加该用户？',{
+          this.$confirm('确认执行该操作？',{
             confrimButtonText:'确定',
             cancelButtonText:'取消'
           }).then(() => {
-            let data = {
-              name:_this.form.realname,
-              account:_this.form.account,
-              gender:_this.form.gender,
-              cellphone:_this.form.cellphone,
-              gender:_this.form.gender,
-              password:sha256(_this.form.passwordOne)
+            let data 
+            if (_this.form.id === undefined) {
+              data = {
+                name:_this.form.realname,
+                account:_this.form.account,
+                cellphone:_this.form.cellphone,
+                gender:_this.form.gender,
+                password:sha256(_this.form.passwordOne)
+              }
+            } else {
+              data = {
+                name:_this.form.realname,
+                id:_this.form.id,
+                cellphone:_this.form.cellphone,
+                gender:_this.form.gender,
+              }
             }
             addUser(data).then(res => {
               if (res.code === '0') {
                 _this.$refs[formName].resetFields()
                 _this.dialogVisible = false
-                _this.getComboData(_this.pageNo,_this.$refs.search.searchText)
+                console.log('kk')
+                _this.getComboData(_this.currentPage,_this.$refs.search.searchText)
                 this.$message({
                   type:'success',
                   message:'添加成功'
@@ -281,16 +304,46 @@ export default {
         }
       })
     },
+    //重置密码
+    confirmModifys (formName) {
+      let _this = this
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$confirm('确认重置密码？',{
+            confrimButtonText:'确定',
+            cancelButtonText:'取消'
+          }).then(() => {
+            let data = {
+              id:_this.form1.id,
+              password:sha256(_this.form1.passwordsone)
+            }
+            setPassword(data).then(res => {
+              if (res.code === '0') {
+                _this.dialogVisibles = false
+                _this.getComboData(_this.currentPage,_this.$refs.search.searchText)
+                _this.$message({
+                  type:'success',
+                  message:'重置成功'
+                })
+              } else {
+                _this.$message({
+                  type:'info',
+                  message:'添加失败'
+                })
+              }
+            })
+          })
+        }
+      })
+    },
     //取消
     handleClose (formName) {
-      // if (this.$refs[formName] !== undefined) {
-        console.log(this.$refs[formName])
-        this.$refs[formName].resetFields()
-        this.dialogVisible = false
-      // }
+      this.$refs[formName].resetFields()
+      this.dialogVisible = false
     },
-    handleCloses () {
-
+    handleCloses (formName) {
+      this.$refs[formName].resetFields()
+      this.dialogVisibles = false
     }
   }
 }
