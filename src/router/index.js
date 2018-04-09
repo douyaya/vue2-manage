@@ -12,7 +12,7 @@ const Driver = r => require.ensure([], () => r(require('@/page/driver/Driver')),
 const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe/SubscribeOrder')), 'SubscribeOrder');
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
-const OperateDriver = r => require.ensure([], () => r(require('@/page/driver/OperateDriver')), 'OperateDriver');
+const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
 const routes = [
 	{
 		path: '/',
@@ -23,9 +23,9 @@ const routes = [
 		component: manage,
 		children:[
 			{
-				path: '',
-				component: OperateDriver,
-				meta: ['分配陪驾人']
+				path: '/',
+				component: SubscribeOrder,
+				meta: ['订单列表']
 			},
 			{
 				path:'/combolist',
@@ -65,7 +65,7 @@ const routes = [
 			{
 				path: '/operateDriver',
 				component: OperateDriver,
-				meta: ['陪驾人员管理', '分配陪驾']
+				meta: ['分配陪驾人']
 			}
 		]
 	}

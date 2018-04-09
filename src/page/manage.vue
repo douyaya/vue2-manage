@@ -14,9 +14,8 @@
 						<el-menu-item index="carList">车辆列表</el-menu-item>
 					</el-submenu>
 					<el-submenu index="4">
-						<template slot="title"><i class="iconfont">&#xe619;</i>陪驾人员管理</template>
+						<template slot="title"><i class="iconfont">&#xe619;</i>陪驾管理</template>
 						<el-menu-item index="driver">陪驾人列表</el-menu-item>
-						<el-menu-item index="operateDriver">分配陪驾人</el-menu-item>
 					</el-submenu>
 					<el-submenu index="5">
 						<template slot="title"><i class="iconfont">&#xe607;</i>预约订单管理</template>

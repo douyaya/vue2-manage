@@ -67,3 +67,7 @@ export function setPassword (data) {
 export function getSubscribeOrder (data) {
   return http.post('/order/getAllApply.do',data)
 }
+//获取可用陪驾人员
+export function allotDriver () {
+  return http.post('/driver/getDrivers.do')
+}

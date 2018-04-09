@@ -1,12 +1,13 @@
 <template>
   <div class="subscribeorder">
     <head-top></head-top>
-    <search>
+    <search v-on:search="_search" ref="search" v-on:refresh="_search">
       <div style="display:flex;" slot="province">
-        <el-input size="small" class="text" placeholder="陪驾人姓名" v-model="searchText"></el-input>
-        <el-input size="small" class="text" placeholder="陪驾人手机号" v-model="searchText"></el-input>
+        <el-input size="small" class="text" placeholder="陪驾人姓名" v-model="drivername"></el-input>
+        <el-input size="small" class="text" placeholder="陪驾人手机号" v-model="driverphone"></el-input>
       </div>
-      <el-select size="small" style="width:100px" v-model="value" placeholder="请选择">
+      <el-select size="small" style="width:100px" v-model="value" 
+        @change="selectChange" placeholder="请选择">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -23,38 +24,73 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
+              <el-form-item label="车型：" style="min-width:150px">
+                <span>{{ props.row.vehicleModelName}}</span>
+              </el-form-item>
+              <el-form-item label="预约陪驾时间：" style="min-width:250px">
+                <span>{{ props.row.applyPlanTime}}</span>
+              </el-form-item>
+              <el-form-item label="套餐陪驾次数：" style="min-width:150px">
+                <span>{{ props.row.comboDriveTime}}</span>
+              </el-form-item>
+              <el-form-item label="套餐单次陪驾时间：" style="min-width:150px">
+                <span>{{ props.row.comboDriveEveryTime}}</span>
+              </el-form-item>
+              <el-form-item label="套餐已使用次数：" style="min-width:150px">
+                <span>{{ props.row.comboResidueTime}}</span>
+              </el-form-item>
+              <el-form-item label="陪驾人：" style="min-width:150px">
+                <span>{{ props.row.driverName}}</span>
+              </el-form-item>
+              <el-form-item label="陪驾人电话：" style="min-width:250px">
+                <span>{{ props.row.driverPhone}}</span>
+              </el-form-item>
+              <el-form-item label="车牌号：" style="min-width:150px">
+                <span>{{ props.row.vehicleCode}}</span>
+              </el-form-item>
+              <el-form-item label="陪驾地点：" style="min-width:150px">
+                <span>{{ props.row.applyAddress}}</span>
+              </el-form-item>
               <el-form-item label="实际开始时间">
-                <span>{{ props.row.beginTime}}</span>
+                <span>{{ props.row.driveStartTime}}</span>
               </el-form-item>
               <el-form-item label="实际结束时间">
-                <span>{{ props.row.endTime}}</span>
+                <span>{{ props.row.driveEndTime}}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
         <el-table-column
-          label="客户姓名"
-          prop="name">
+          label="编号" width="70px"
+          prop="rowNum">
         </el-table-column>
         <el-table-column
-          label="联系方式"
-          prop="phone">
+          label="约车单号" width="250px"
+          prop="applyNo">
+        </el-table-column>
+        <el-table-column 
+          label="客户姓名" min-width="120px"
+          prop="custName">
         </el-table-column>
         <el-table-column
-          label="预约套餐"
-          prop="combo">
+          label="联系方式" width="150px"
+          prop="custPhone">
         </el-table-column>
         <el-table-column
-          label="预约开始时间"
-          prop="subBeginTime">
+          label="套餐名称"
+          prop="comboName">
         </el-table-column>
         <el-table-column
-          label="预约结束时间"
-          prop="payStatus">
+          label="套餐价格"
+          prop="comboPrice">
         </el-table-column>
         <el-table-column
-          label="下单时间"
-          prop="time">
+          label="操作">
+          <template slot-scope="props">
+            <el-button type="primary" v-if="props.row.allotStatus === 1" size="small"
+              @click="toAllot(props.row)">去分配</el-button>
+            <el-button type="info" v-else disabled size="small">已分配</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -70,6 +106,7 @@
   </div>
 </template>
 <script>
+import Vue from 'vue'
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
 import {getSubscribeOrder} from '@/api/index.js'
@@ -82,23 +119,31 @@ export default {
   data () {
     return {
       tableData:[],
-      load_data:false,
+      load_data:true,
       count:0,
       currentPage:1,
       pageSize:15,
+      drivername:'',
+      driverphone:'',
       options:[
-        {value:'1',label:'全部'},
-        {value:'2',label:'未开始'},
-        {value:'3',label:'进行中'},
-        {value:'4',label:'已结束'}
+        {value:0,label:'未分配'},
+        {value:1,label:'未开始'},
+        {value:2,label:'进行中'},
+        {value:3,label:'已结束'},
+        {value:'',label:'全部'}
       ],
-      value:'1'
+      value:0
     }
   },
   created () {
-    this.getTableData(1)
+    this.getTableData(1,'','','',0)
   },
   methods:{
+    //select选择
+    selectChange (val) {
+      this.getTableData(this.currentPage,this.$refs.search.searchText,this.drivername,this.driverphone,val)
+    },
+    //获取数据
     getTableData (pageNo,name,driveName,driverPhone,operateType) {
       let data = {
         pageNo:pageNo,
@@ -108,9 +153,10 @@ export default {
         driverPhone:driverPhone,
         operateType:operateType
       }
-      console.log(data)
       getSubscribeOrder(data).then(res => {
         if (res.code === '0') {
+          this.load_data = false
+          this.count = res.data.totalRecord
           this.tableData = res.data.results
         }
       })
@@ -118,8 +164,14 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      console.log(this.count)
-      console.log(this.currentPage)
+    },
+    //刷新或者搜索
+    _search () {
+      this.getTableData(this.currentPage,this.$refs.search.searchText,this.drivername,this.driverphone,this.value)
+    },
+    //分配陪驾人
+    toAllot (val) {
+      this.$router.push({path:'/operateDriver',query:{data:JSON.stringify(val)}})
     }
   }
 }
