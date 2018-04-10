@@ -14,6 +14,7 @@
           <span class="item">{{`客户姓名：${data.custName}`}}</span>
           <span class="item">{{`客户电话：${data.custPhone}`}}</span>
           <span class="item">{{`约车时间：${data.applyPlanTime}`}}</span>
+          <span class="item">{{`陪驾地点：${data.applyAddress}`}}</span>
         </el-card>
       </div>
     </div>
@@ -27,10 +28,10 @@
         </el-radio-button>
       </el-radio-group>
       <div class="list">
-        <el-card class="item" v-for="(tmp,index) of orderList" :key="index">
-          <div>{{`订单编号：${tmp.number}`}}</div>
-          <div>{{`预约陪驾时间：${tmp.time}`}}</div>
-          <div>{{`预约陪驾地点：${tmp.address}`}}</div>
+        <el-card style="width:350px;margin:0 10px 10px 0" v-for="(tmp,index) of orderList" :key="index">
+          <div>{{`订单编号：${tmp.applyNo}`}}</div>
+          <div>{{`预约陪驾时间：${tmp.applyPlanTime}`}}</div>
+          <div>{{`预约陪驾地点：${tmp.applyAddress}`}}</div>
         </el-card> 
       </div>
       <div class="footers">
@@ -41,11 +42,12 @@
   </div>
 </template>
 <script>
-import {allotDriver,getSubscribeOrder} from '@/api/index.js'
+import {allotDriver,getDriverOrder,Allot} from '@/api/index.js'
 export default {
   name:'OperateDriver',
   data () {
     return {
+      data:{},
       driverList:[],
       radio3:'',
       orderList:[]
@@ -53,6 +55,7 @@ export default {
   },
   created () {
     this.data = JSON.parse(this.$route.query.data)
+    console.log(this.data)
     this._allotDriver()
   },
   methods:{
@@ -66,23 +69,15 @@ export default {
       })
     },
     getOrder (val) {
-      console.log(this.radio3)
-      // this._getSubscribeOrder()
-      this.orderList = [
-        {number:11222222222,address:'ffffff',time:'dddd'},
-        {number:11222222222,address:'ffffff',time:'dddd'},
-        {number:11222222222,address:'ffffff',time:'dddd'},
-        {number:11222222222,address:'ffffff',time:'dddd'},
-        {number:11222222222,address:'ffffff',time:'dddd'}
-      ]
+      this._getDriverOrder(val)
     },
     //获取陪驾人订单
-    //////////////////////////////////////////////////////////////////////
-    _getSubscribeOrder () {
+    _getDriverOrder (val) {
       let data = {
-        
+        driverId:val
       }
-      getSubscribeOrder(data).then(res => {
+      console.log(data)
+      getDriverOrder(data).then(res => {
         if (res.code === '0') {
           this.orderList = res.data
         }
@@ -90,7 +85,27 @@ export default {
     },
     //提交陪驾人结果
     confirmModify () {
-      console.log(this.radio3)
+      let data = {
+        applyId:this.data.applyId,
+        comboOrderId:this.data.comboOrderId,
+        driverId:this.radio3,
+        state:'test'
+      }
+      console.log(data)
+      Allot(data).then(res => {
+        if (res.code === '0') {
+          this.$router.back()
+          this.$message({
+            type:'success',
+            message:'分配成功'
+          })
+        } else {
+          this.$message({
+            type:'info',
+            message:'分配失败'
+          })
+        }
+      })  
     }
   }
 }
@@ -106,10 +121,11 @@ export default {
          width:90%;
          display:flex;
          .item{
-           display:inline-block;
-           width:250px;
-           margin-bottom:5px;
+          display:inline-block;
+          width:250px;
+          margin-bottom:5px;
          }
+
        }
       }
     }
@@ -122,9 +138,11 @@ export default {
       .list{
         margin:20px 50px;
         display:flex;
-        .item{
-          margin-right:20px;
-        }
+        flex-wrap:wrap;
+        // .item{
+        //   margin-right:20px;
+        //   width:400px;
+        // }
       }
       .footers{
         width:100%;

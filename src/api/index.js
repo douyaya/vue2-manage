@@ -23,6 +23,10 @@ export function deleteCombo (data) {
 export function comboPayList (data) {
   return http.post('/order/getAllComboOrder.do',data)
 }
+//获取套餐分析数据
+export function analyseCombo (data) {
+  return http.post('/order/comboOrderDataStatistics.do',data)
+}
 //获取车辆信息
 export function getCatData (data) {
   return http.post('/vehicle/getAllVehicle.do',data)
@@ -59,6 +63,10 @@ export function getUserMsg (data) {
 export function addUser (data) {
   return http.post('/user/saveUsers.do',data)
 }
+//删除用户
+export function deleteUser (data) {
+  return http.post('/user/deleteUsers.do',data)
+}
 //重置密码
 export function setPassword (data) {
   return http.post('/pwd/reset.do',data)
@@ -70,4 +78,20 @@ export function getSubscribeOrder (data) {
 //获取可用陪驾人员
 export function allotDriver () {
   return http.post('/driver/getDrivers.do')
+}
+//陪驾人id查询订单
+export function getDriverOrder (data) {
+  return http.post('/order/getOrderByDid.do',data)
+}
+//分配陪驾人
+export function Allot (data) {
+  return http.post('/allot/driver.do',data)
+}
+//登陆
+export function login (data) {
+  return http.post('/login/login.do',data)
+}
+//修改密码 
+export function modifyPwd (data) {
+  return http.post('/pwd/modify.do',data)
 }

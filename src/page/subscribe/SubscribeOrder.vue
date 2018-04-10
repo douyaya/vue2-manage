@@ -57,6 +57,9 @@
               <el-form-item label="实际结束时间">
                 <span>{{ props.row.driveEndTime}}</span>
               </el-form-item>
+              <el-form-item label="客户评价">
+                <span>{{ props.row.serviceComments}}</span>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>

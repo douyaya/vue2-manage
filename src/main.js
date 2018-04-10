@@ -4,9 +4,10 @@ import router from './router'
 // import store from './store/'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-Vue.config.productionTip = false;
+import echarts from 'echarts'
+Vue.config.productionTip = false
 Vue.use(ElementUI);
-
+Vue.prototype.$echarts = echarts
 new Vue({
 	el: '#app',
 	router,

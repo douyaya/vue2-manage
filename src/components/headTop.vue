@@ -4,13 +4,13 @@
 			<el-breadcrumb-item :to="{ path: '/manage' }">首页</el-breadcrumb-item>
 			<el-breadcrumb-item v-for="(item, index) in $route.meta" :key="index">{{item}}</el-breadcrumb-item>
 		</el-breadcrumb>
-		<!-- <el-dropdown @command="handleCommand" menu-align='start'>
+		<el-dropdown @command="handleCommand" menu-align='start'>
 			<img src="../assets/img/avator.jpg" class="avator">
 			<el-dropdown-menu slot="dropdown">
-				<el-dropdown-item command="home">首页</el-dropdown-item>
+				<el-dropdown-item command="modify">修改密码</el-dropdown-item>
 				<el-dropdown-item command="singout">退出</el-dropdown-item>
 			</el-dropdown-menu>
-		</el-dropdown> -->
+		</el-dropdown>
     </div>
 </template>
 
@@ -20,16 +20,35 @@
 	// import {mapActions, mapState} from 'vuex'
 
     export default {
-    	data(){
-    		return {
-    			// baseImgPath,
-    		}
-    	},
-    	created(){
-    		// if (!this.adminInfo.id) {
-    		// 	this.getAdminData()
-    		// }
-    	},
+			data () {
+				return {
+
+				}
+			},
+			methods:{
+				handleCommand (command) {
+					if (command === 'singout') {
+						this.$confirm('确认退出？',{
+							confirmButtonText:'确定',
+							cancelButtonText:'取消'
+						}).then(() => {
+							this.$router.push('/')
+						})
+					} else {
+						this.$router.push('/modifyPwd')
+					}
+				}
+			}
+    	// data(){
+    	// 	return {
+    	// 		// baseImgPath,
+    	// 	}
+    	// },
+    	// created(){
+    	// 	// if (!this.adminInfo.id) {
+    	// 	// 	this.getAdminData()
+    	// 	// }
+    	// },
     	// computed: {
     	// 	...mapState(['adminInfo']),
     	// },

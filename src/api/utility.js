@@ -38,3 +38,19 @@ export function addressStr (arr) {
   }
   return str
 }
+let storage = window.localStorage
+//本地存储用户名和密码
+export function getUser () {
+  return storage['User']
+}
+export function setUser (val) {
+  storage.setItem('User',val)
+}
+//只获取套餐名称
+export function getComboName (arr) {
+  let arrs = []
+  for (let tmp of arr) {
+    arrs.push(tmp.comboName)
+  }
+  return arrs
+}

@@ -1,10 +1,10 @@
 <template>
   <div class="comboorder">
     <head-top></head-top>
-    <search v-show="isAnalyse" v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-button @click="isAnalyse = false" type="primary" size="small">数据分析</el-button>
+    <search v-show="!isList" v-on:search="_search" ref="search" v-on:refresh="_search">
+      <el-button size="small" type="primary" @click="toCharts">数据分析</el-button>
     </search>
-    <div v-if="isAnalyse">
+    <div :class="isList ? 'transparent':''">
       <div class="table-container">
         <el-table v-loading="load_data"
             element-loading-text="拼命加载中"
@@ -72,6 +72,7 @@
             label="下单时间" width="200px"
             prop="comboOrderTime">
             <template slot-scope="scope">
+              <!-- <span>{{scope.row.comboOrderTime | beTime}}</span> -->
               <span>{{scope.row.comboOrderTime}}</span>
             </template>
           </el-table-column> 
@@ -87,49 +88,34 @@
         </el-pagination>
       </div>
     </div>
-    <div v-else class="analyse-container">
-      <div class="analyse">
-        <el-button type="primary" size="small" @click="isAnalyse = true">返回套餐列表</el-button>
+    <div :class="isList ? '': 'transparent'">
+      <div class="charts">
+        <el-date-picker class="date"
+          v-model="value6"
+          type="daterange"
+          placeholder="选取查询时间区间"
+          align="right"
+          format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd"
+          @change="handleChange"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions2">
+        </el-date-picker>
+        <!-- <el-button @click="searchData">搜索</el-button> -->
       </div>
-      <el-table v-loading="load_datatwo"
-            element-loading-text="拼命加载中"
-          :data="analyseData">
-        <el-table-column
-          label="套餐名称"
-          prop="comboName">
-        </el-table-column> 
-        <el-table-column
-          label="套餐价格"
-          prop="comboPrice">
-        </el-table-column>
-        <el-table-column
-          label="套餐陪驾次数"
-          prop="comboDriveTime">
-        </el-table-column>
-          <el-table-column
-          label="单次陪驾时间"
-          prop="comboDriveEveryTime">
-        </el-table-column>
-        <el-table-column
-          label="订单总数"
-          prop="orderCount">
-        </el-table-column> 
-        <el-table-column
-          label="套餐总金额"
-          prop="sumPrice">
-        </el-table-column> 
-          <el-table-column
-          label="总交易金额"
-          prop="sumAmount">
-        </el-table-column> 
-      </el-table>  
+      <div id="myChart" :style="{width: '1000px', height: '600px'}">
+      </div>
     </div>
   </div>
 </template>
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
-import {comboPayList,analyseCombo} from '@/api/index.js'
+import {comboPayList,getComboData,analyseCombo} from '@/api/index.js'
+import {getComboName} from '@/api/utility.js'
 export default {
   name:'ComboOrder',
   components:{
@@ -143,11 +129,41 @@ export default {
       count:43,
       currentPage:1,
       pageSize:15,
-      isAnalyse:true,
-      load_datatwo:true,
-      analyseData:[]
+      isList:false,
+      value6:'',
+      comboData:[],
+      pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        }
     }
   },
+  // mounted () {
+  //   this.dramLine()
+  // },
   filters:{
     bestatus (val) {
       return val === 0 ? '已支付' : '未支付'
@@ -158,9 +174,29 @@ export default {
   },
   created () {
     this.getTableData(1,'')
-    this._analyseCombo('2018-01-04','2018-04-10')
+    this._getComboData()
+    this._analyseCombo('2018-03-01','2018-04-10')
   },
   methods:{
+    //获取套餐种类
+    _getComboData () {
+      let data = {
+        pageNo:1,
+        pageSize:1000,
+        name:''
+      }
+      getComboData(data).then(res => {
+        if (res.code === '0') {
+          this.comboData = getComboName(res.data.results)
+          console.log(this.comboData)
+        }
+      })
+    },
+    //查看图表分析
+    toCharts () {
+      this.isList = !this.isList
+      this.dramLine()
+    },
     //获取分析数据
     _analyseCombo (beginTime,endTime) {
       let data = {
@@ -168,10 +204,71 @@ export default {
         comboOrderEndTime:endTime
       }
       analyseCombo(data).then(res => {
-        if (res.code === '0') {
-          this.load_datatwo= false
-          this.analyseData = res.data
-        }
+
+      })
+    },
+    //图标参数
+    dramLine () {
+      let myChart = this.$echarts.init(document.getElementById('myChart'))
+      console.log(myChart.setOption)
+      myChart.setOption({
+        tooltip : {
+          trigger: 'axis'
+        },
+        toolbox: {
+            show : true,
+            feature : {
+                // mark : {show: true},
+                // dataView : {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
+        calculable : true,
+        legend: {
+            data:this.comboData
+        },
+        xAxis : [
+            {
+              type : 'category',
+              data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+            }
+        ],
+        yAxis : [
+          {
+              type : 'value',
+              name : '数量',
+              axisLabel : {
+                  formatter: '{value} 个'
+              }
+          },
+          {
+              type : 'value',
+              name : '',
+              axisLabel : {
+                  formatter: ''
+              }
+          }
+        ],
+        series : [
+            {
+                name:'套餐A',
+                type:'bar',
+                data:[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            },
+            {
+                name:'套餐B',
+                type:'bar',
+                data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+            },
+            {
+                name:'套餐C',
+                type:'line',
+                yAxisIndex: 1,
+                data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+            }
+        ]
       })
     },
     //获取列表数据
@@ -196,6 +293,14 @@ export default {
     //搜索
     _search () {
       this.getTableData(this.currentPage,this.$refs.search.searchText)
+    },
+    //根据日期查询数据
+    searchData () {
+      console.log(this.value6)
+    },
+    //日期改变是触发
+    handleChange (val) {
+      console.log(val)
     }
   }
 }
@@ -220,11 +325,14 @@ export default {
       padding-left:70%;
       margin-top:10px;
     }
-    .analyse-container{
-      padding:0 30px;
-      .analyse{
-        text-align:right;
-        padding:10px;
+    .transparent{
+      display:none;
+    }
+    .charts{
+      display:flex;
+      padding:20px;
+      .date{
+        margin-right:10px;
       }
     }
   }

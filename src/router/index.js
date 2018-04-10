@@ -13,6 +13,8 @@ const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
 const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
+const ModifyPwd = r => require.ensure([], () => r(require('@/page/user/ModifyPwd')), 'ModifyPwd');
+
 const routes = [
 	{
 		path: '/',
@@ -66,6 +68,10 @@ const routes = [
 				path: '/operateDriver',
 				component: OperateDriver,
 				meta: ['分配陪驾人']
+			},
+			{
+				path: '/modifyPwd',
+				component: ModifyPwd
 			}
 		]
 	}

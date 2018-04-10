@@ -120,7 +120,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search'
-import {getUserMsg,addUser,setPassword} from '@/api/index.js'
+import {getUserMsg,addUser,setPassword,deleteUser} from '@/api/index.js'
 import {checkCellphone} from '@/api/utility.js'
 let sha256 = require('js-sha256').sha256
 export default {
@@ -235,7 +235,28 @@ export default {
     },
     //删除数据
     handleDelete (index,val) {
-
+      this.$confirm('确认删除该用户？',{
+        confrimButtonText:'确认',
+        cancelButtonText:'取消'
+      }).then(() => {
+        let data ={
+          id:val.id
+        }
+        deleteUser(data).then(res => {
+          if (res.code === '0') {
+            this.getComboData(this.currentPage,this.$refs.search.searchText)
+            this.$message({
+              type:'success',
+              message:'删除成功'
+            })
+          } else {
+            this.$message({
+              type:'info',
+              message:'删除失败'
+            })
+          }
+        })
+      })
     },
     //重置密码
     setpassword (index,val) {
