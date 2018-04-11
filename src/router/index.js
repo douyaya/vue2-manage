@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import {getUser} from '@/api/utility.js'
 Vue.use(Router)
 
 const login = r => require.ensure([], () => r(require('@/page/login')), 'login');
@@ -15,10 +15,15 @@ const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUs
 const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
 const ModifyPwd = r => require.ensure([], () => r(require('@/page/user/ModifyPwd')), 'ModifyPwd');
 
-const routes = [
+const router = new Router({
+	routes : [
 	{
 		path: '/',
-		component: login
+		component: login,
+		meta: {
+			title: ['登陆'],
+			requiresAuth: false
+		}
 	},
 	{
 		path: '/manage',
@@ -27,57 +32,98 @@ const routes = [
 			{
 				path: '/',
 				component: SubscribeOrder,
-				meta: ['订单列表']
+				meta:{
+					title: ['订单列表'],
+					requiresAuth:true
+				}
 			},
 			{
 				path:'/combolist',
 				component:ComboList,
-				meta:['套餐管理','在售套餐列表']
+				meta: {
+					title: ['套餐管理', '在售套餐列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/comboOrder',
 				component: ComboOrder,
-				meta: ['套餐管理', '已购套餐记录']
+				meta: {
+					title: ['套餐管理', '已购套餐记录'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/carList',
 				component: CarList,
-				meta: ['车辆管理', '车辆列表']
+				meta: {
+					title: ['车辆管理', '车辆列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/driver',
 				component: Driver,
-				meta: ['陪驾人员管理', '陪驾人列表']
+				meta: {
+					title: ['陪驾人员管理', '陪驾人列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/subscribeorder',
 				component: SubscribeOrder,
-				meta: ['预约订单管理', '订单列表']
+				meta: {
+					title: ['预约订单管理', '订单列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/attention',
 				component: AttentionUser,
-				meta: ['公众号用户管理', '关注人列表']
+				meta: {
+					title: ['公众号用户管理', '关注人列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/system',
 				component: SystemUser,
-				meta: ['系统用户管理', '用户列表']
+				meta: {
+					title: ['系统用户管理', '用户列表'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/operateDriver',
 				component: OperateDriver,
-				meta: ['分配陪驾人']
+				meta: {
+					title: ['分配陪驾人'],
+					requiresAuth: true
+				}
 			},
 			{
 				path: '/modifyPwd',
-				component: ModifyPwd
+				component: ModifyPwd,
+				meta: {
+					title: ['修改密码'],
+					requiresAuth: true
+				}
 			}
 		]
 	}
 ]
-
-export default new Router({
-	routes,
-	strict: process.env.NODE_ENV !== 'production',
+	// strict: process.env.NODE_ENV !== 'production',
 })
+router.beforeEach((to,from,next) => {
+ 	if (to.meta.requiresAuth) {
+		let data = JSON.parse(getUser())
+		if (data.login) {
+			next()
+		} else {
+			next({path:'/'})
+		}
+ 	} else {
+		 next()
+	 }
+})
+export default router

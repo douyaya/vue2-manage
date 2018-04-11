@@ -1,9 +1,35 @@
 <template>
   <div class="comboorder">
     <head-top></head-top>
-    <search v-show="isAnalyse" v-on:search="_search" ref="search" v-on:refresh="_search">
+    <!-- <search v-bind:placeholder="text" v-show="isAnalyse" v-on:search="_search" ref="search" v-on:refresh="_search">
       <el-button @click="isAnalyse = false" type="primary" size="small">数据分析</el-button>
-    </search>
+    </search> -->
+    <div v-show="isAnalyse" class="nav">
+      <div class="input">
+        <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="客户姓名" v-model="name"></el-input>
+        <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="客户电话" v-model="cellphone"></el-input>
+        <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="套餐名称" v-model="comboName"></el-input>
+        <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="订单编号" v-model="orderNo"></el-input>
+        <!-- <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="下单时间" v-model="createTime"></el-input> -->
+        <el-date-picker class="item"
+          v-model="createTime"
+          type="date"
+          size="small"
+          value-format="yyyy-MM-dd"
+          @change="handleChange"
+          placeholder="选择日期">
+        </el-date-picker>
+        <el-button type="primary" style="height:29px;margin-left:10px;" size="small" @click="_search">
+          <i class="el-icon-search"></i>
+        </el-button>
+      </div>
+      <div class="refresh">
+        <el-button type="primary" style="height:29px;" size="small" @click="_search">
+          <img class="image" src="../../assets/img/refresh.png" alt="">
+        </el-button>
+        <el-button @click="dataAnalyse" type="primary" size="small">数据分析</el-button>
+      </div>
+    </div>
     <div v-if="isAnalyse">
       <div class="table-container">
         <el-table v-loading="load_data"
@@ -18,7 +44,7 @@
                   <span>{{ props.row.comboName}}</span>
                 </el-form-item>
                 <el-form-item label="套餐价格" style="width:20%">
-                  <span>{{`￥${props.row.comboPrice}元`}}</span>
+                  <span>{{`￥${props.row.comboPrice}`}}</span>
                 </el-form-item>
                 <el-form-item label="套餐陪驾次数" style="width:20%">
                   <span>{{`${props.row.comboDriveTime}次`}}</span>
@@ -28,6 +54,9 @@
                 </el-form-item>
                 <el-form-item label="陪驾车型" style="width:20%">
                   <span>{{ props.row.vehicleModelName}}</span>
+                </el-form-item>
+                <el-form-item label="已使用次数" style="width:20%">
+                  <span>{{ props.row.comboResidueTime}}</span>
                 </el-form-item>
                 <el-form-item label="套餐描述">
                   <span>{{ props.row.comboDesc}}</span>
@@ -40,7 +69,7 @@
             prop="rowNum">
           </el-table-column>
           <el-table-column
-            label="套餐编号" width="230px"
+            label="套餐编号" width="225px"
             prop="comboOrderNo">
           </el-table-column>
           <el-table-column
@@ -48,7 +77,7 @@
             prop="custName">
           </el-table-column>
           <el-table-column
-            label="联系人电话" width="150px"
+            label="联系人电话" width="130px"
             prop="custPhone">
           </el-table-column>
           <el-table-column
@@ -56,25 +85,22 @@
             prop="comboName">
           </el-table-column>
           <el-table-column
-            label="已使用次数"
-            prop="comboResidueTime">
+            label="支付金额">
+            <template slot-scope="scope">
+              <span>{{`￥${scope.row.comboPrice}`}}</span>
+            </template>
           </el-table-column>
+          <el-table-column
+            label="下单时间" width="175px">
+            <template slot-scope="scope">
+              <span>{{scope.row.comboOrderTime}}</span>
+            </template>
+          </el-table-column> 
           <el-table-column label="支付状态" prop="payStatus">
             <template slot-scope="scope">
               <span class="pay" :class="scope.row.payStatus === 0 ? 'paystatus1' : 'paystatus2'">{{scope.row.payStatus | bestatus}}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            label="支付金额"
-            prop="comboPrice">
-          </el-table-column>
-          <el-table-column
-            label="下单时间" width="200px"
-            prop="comboOrderTime">
-            <template slot-scope="scope">
-              <span>{{scope.row.comboOrderTime}}</span>
-            </template>
-          </el-table-column> 
         </el-table>
       </div>
       <div class="Pagination">
@@ -89,6 +115,20 @@
     </div>
     <div v-else class="analyse-container">
       <div class="analyse">
+        <el-date-picker
+          size="small"
+          v-model="value7"
+          value-format="yyyy-MM-dd"
+          @change="handleChanges"
+          type="daterange"
+          align="right"
+          unlink-panels
+          placeholder="开始日期至结束日期"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions2">
+        </el-date-picker>
         <el-button type="primary" size="small" @click="isAnalyse = true">返回套餐列表</el-button>
       </div>
       <el-table v-loading="load_datatwo"
@@ -128,24 +168,55 @@
 </template>
 <script>
 import headTop from '@/components/headTop'
-import Search from '@/components/search' 
 import {comboPayList,analyseCombo} from '@/api/index.js'
 export default {
   name:'ComboOrder',
   components:{
-    headTop,
-    Search
+    headTop
   },
   data () {
     return {
       tableData:[],
-      load_data:false,
+      load_data:true,
       count:43,
       currentPage:1,
       pageSize:15,
       isAnalyse:true,
       load_datatwo:true,
-      analyseData:[]
+      analyseData:[],
+      name:'',
+      cellphone:'',
+      comboName:'',
+      orderNo:'',
+      createTime:'',
+      value7:'',
+      pickerOptions2: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        }
     }
   },
   filters:{
@@ -157,10 +228,24 @@ export default {
     // }
   },
   created () {
-    this.getTableData(1,'')
-    this._analyseCombo('2018-01-04','2018-04-10')
+    this.getTableData(1,'','','','')
   },
   methods:{
+    //日期选择
+    handleChange (val) {
+      this.createTime = val
+      this._search()
+    },
+    //调到数据分析页面
+    dataAnalyse () {
+      this.isAnalyse = false
+      this._analyseCombo()
+    },
+    //数据分析的日期选择
+    handleChanges (val) {
+      let arr = val.split('至')
+      this._analyseCombo(arr[0],arr[1])
+    },
     //获取分析数据
     _analyseCombo (beginTime,endTime) {
       let data = {
@@ -175,14 +260,20 @@ export default {
       })
     },
     //获取列表数据
-    getTableData (pageNo,name) {
+    getTableData (pageNo,name,cellphone,comboName,orderNo,createTime) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
-        name:name
+        name:name,
+        cellphone:cellphone,
+        comboName:comboName,
+        orderNo:orderNo,
+        createTime:createTime
       }
+      console.log(data)
       comboPayList (data).then(res => {
         if (res.code === '0') {
+          this.load_data = false
           this.tableData = res.data.results
           this.count = res.data.totalRecord
         }
@@ -191,19 +282,38 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this.getTableData(val,this.$refs.search.searchText)
+      this.getTableData(val,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime)
     },
     //搜索
     _search () {
-      this.getTableData(this.currentPage,this.$refs.search.searchText)
+      this.getTableData(this.currentPage,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime)
     }
   }
 }
 </script>
 <style lang="less" scoped>
   .comboorder{
+    .nav{
+      display:flex;
+      justify-content: space-between;
+      padding:20px;
+      .input{
+        display:flex;
+        .item{
+          width:120px;
+          margin-left:10px;
+        }
+      }
+      .refresh{
+        display:flex;
+        .image{
+          width:20px;
+          margin:-3px -3px 0;
+        }
+      }
+    }
     .table-container{
-      padding:0 40px;
+      padding:0 20px;
       min-height:660px;
       .pay{
         color:white;
@@ -223,8 +333,9 @@ export default {
     .analyse-container{
       padding:0 30px;
       .analyse{
-        text-align:right;
-        padding:10px;
+        display:flex;
+        padding:10px 0;
+        justify-content: space-between;
       }
     }
   }

@@ -47,19 +47,12 @@
 		},
 		created () {
 			// setUser(JSON.stringify({username:'ffff',password:'dddd'}))
-			localStorage.removeItem('User')
+			// localStorage.removeItem('User')
 			if (getUser() !== undefined) {
-				this.loginForm = JSON.parse(getUser())
+				this.loginForm = JSON.parse(getUser()).user
+				// console.log(this.loginForm)
 			} 
 		},
-		// mounted(){
-			// if (!this.adminInfo.id) {
-    	// 		this.getAdminData()
-    	// 	}
-		// },
-		// computed: {
-		// 	...mapState(['adminInfo']),
-		// },
 		methods: {
 			async submitForm(formName) {
 				let _this = this
@@ -71,8 +64,17 @@
 						}
 						login(data).then(res => {
 							if (res.code === '0') {
-								_this.loginForm.id = res.data.id
-								setUser(JSON.stringify(_this.loginForm))
+								let data = {
+									login:true
+								}
+								data.user = {
+									username:_this.loginForm.username,
+									password:_this.loginForm.password,
+									id:res.data.id,
+									userType:res.data.userType
+								}
+								console.log(data)
+								setUser(JSON.stringify(data))
 								this.$message({
 									type:'success',
 									message:'登陆成功'
@@ -96,17 +98,6 @@
 				})
 			}
 		}
-		// watch: {
-		// 	adminInfo: function (newValue){
-		// 		if (newValue.id) {
-		// 			this.$message({
-    //                     type: 'success',
-    //                     message: '检测到您之前登录过，将自动登录'
-    //                 });
-		// 			this.$router.push('manage')
-		// 		}
-		// 	}
-		// }
 	}
 </script>
 

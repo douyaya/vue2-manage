@@ -1,14 +1,16 @@
 <template>
   <div class="search">
     <form class="input" @submit.prevent="search">
-      <el-input class="text" size="small" placeholder="请输入内容" v-model="searchText"></el-input>
+      <el-input  @keyup.enter.native="search" class="text" size="small" :placeholder="placeholder" v-model="searchText"></el-input>
       <slot name="province"></slot>
-      <el-button @click="search" type="primary">搜索</el-button>
+      <el-button type="primary" style="height:29px;" size="small" @click="search">
+        <i class="el-icon-search"></i>
+      </el-button>
     </form>
     <div class="refresh">
-      <div class="image" @click="refresh">
-        <img style="width:30px;" src="../assets/img/refresh.png" alt="">
-      </div>
+      <el-button type="primary" style="height:29px;" size="small" @click="search">
+        <img class="image" src="../assets/img/refresh.png" alt="">
+      </el-button>
       <slot></slot>
     </div>
   </div>
@@ -19,6 +21,12 @@ export default {
   data () {
     return {
       searchText:''
+    }
+  },
+  props:{
+    placeholder:{
+      type:String,
+      required:true
     }
   },
   methods:{
@@ -35,7 +43,7 @@ export default {
 </script>
 <style lang="less" scoped>
   .search{
-    padding:20px 35px;
+    padding:20px;
     display:flex;
     justify-content: space-between;
     .input{
@@ -48,9 +56,8 @@ export default {
     .refresh{
       display:flex;
       .image{
-        margin-right:10px;
-        padding-top:4px;
-        cursor: pointer;
+        width:20px;
+        margin:-3px -3px 0;
       }
     }
   }

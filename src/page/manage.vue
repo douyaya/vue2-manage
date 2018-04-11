@@ -1,7 +1,7 @@
 <template>
 	<div class="manage_page fillcontain">
 		<el-row style="height: 100%;">
-	  	<el-col :span="4" style="min-height:100%;background-color: #324057;">
+	  	<el-col :span="3" style="min-height:100%;background-color: #324057;">
 				<el-menu :default-active="defaultActive" style="min-height: 100%;" theme="dark" router>
 					<el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
 					<el-submenu index="2">
@@ -25,29 +25,38 @@
 						<template slot="title"><i class="iconfont">&#xe786;</i>公众号用户管理</template>
 						<el-menu-item index="attention">关注人列表</el-menu-item>
 					</el-submenu>
-					<el-submenu index="7">
+					<el-submenu index="7" v-show="userType === 1">
 						<template slot="title"><i class="iconfont">&#xe619;</i>系统用户管理</template>
 						<el-menu-item index="system">用户列表</el-menu-item>
 					</el-submenu> 
 				</el-menu>
 			</el-col>
-			<el-col :span="20" style="height: 100%;overflow: auto;">
-				<keep-alive>
+			<el-col :span="21" style="height: 100%;overflow: auto;">
+				<!-- <keep-alive> -->
 				    <router-view></router-view>
-				</keep-alive>
+				<!-- </keep-alive> -->
 			</el-col>
 		</el-row>
   	</div>
 </template>
-
 <script>
-    export default {
+import {getUser} from '@/api/utility.js'
+	export default {
+		data () {
+			return {
+				userType:null
+			}
+		},
 		computed: {
 			defaultActive: function(){
 				return this.$route.path.replace('/', '')
 			}
 		},
-    }
+		created () {
+			this.userType = JSON.parse(getUser()).user.userType
+			console.log(this.userType)
+		}
+	}
 </script>
 
 

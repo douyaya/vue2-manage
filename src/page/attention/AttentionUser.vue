@@ -1,7 +1,7 @@
 <template>
   <div class="attention">
     <head-top></head-top>
-    <search v-on:search="_search" ref="search" v-on:refresh="_search"></search>
+    <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search"></search>
     <div class="table-container">
       <el-table v-loading="load_data"
           element-loading-text="拼命加载中"
@@ -81,7 +81,8 @@ export default {
       load_data:true,
       count:0,
       currentPage:1,
-      pageSize:15
+      pageSize:15,
+      text:'真实姓名'
     }
   },
   filters:{
@@ -129,7 +130,7 @@ export default {
 <style lang="less" scoped>
   .attention{
     .table-container{
-      padding:0 40px;
+      padding:0 20px;
       min-height:660px;
       .status{
         display:inline-block;

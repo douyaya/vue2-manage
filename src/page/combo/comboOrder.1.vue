@@ -308,7 +308,7 @@ export default {
 <style lang="less" scoped>
   .comboorder{
     .table-container{
-      padding:0 40px;
+      padding:0 20px;
       min-height:660px;
       .pay{
         color:white;

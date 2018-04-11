@@ -1,7 +1,7 @@
 <template>
   <div class="driver">
     <head-top></head-top>
-    <search v-on:search="_search" ref="search" v-on:refresh="_search">
+    <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
       <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
@@ -199,6 +199,7 @@ export default {
     //   }
     // }
     return {
+      text:'请输入姓名',
       currentPage:1,//当前页码
       count:50,//总条目数
       tableData:[],
@@ -385,7 +386,7 @@ export default {
 <style lang="less" scoped>
   .driver{
     .table_container{
-      padding:0 40px;
+      padding:0 20px;
       min-height:660px;
     }
     .Pagination{

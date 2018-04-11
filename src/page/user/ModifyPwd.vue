@@ -52,7 +52,7 @@ export default {
     }
   },
   created () {
-    this.userDate = JSON.parse(getUser())
+    this.userDate = JSON.parse(getUser()).user
   },
   methods:{
     confirmModify (formName) {

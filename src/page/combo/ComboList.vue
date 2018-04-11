@@ -1,7 +1,7 @@
 <template>
   <div class="comboList">
     <head-top></head-top>
-    <search v-on:search="_search" ref="search" v-on:refresh="_search">
+    <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
       <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
@@ -30,16 +30,22 @@
           prop="comboName">
         </el-table-column>
         <el-table-column
-          label="陪驾次数"
-          prop="times">
+          label="陪驾次数">
+          <template slot-scope="prop">
+            <span>{{`${prop.row.times}次`}}</span>
+          </template>
         </el-table-column>
         <el-table-column
-          label="套餐价格"
-          prop="price">
+          label="套餐价格">
+          <template slot-scope="prop">
+            <span>{{`￥${prop.row.price}`}}</span>
+          </template>
         </el-table-column>
         <el-table-column
-          label="单次时间"
-          prop="everyTime">
+          label="单次时间">
+        <template slot-scope="prop">
+            <span>{{`${prop.row.everyTime}小时`}}</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="车型"
@@ -139,6 +145,7 @@ export default {
       }
     }
     return {
+      text:'套餐名称',
       currentPage:1,//当前页码
       count:1,//总条目数
       pageSize:15,//每页条数
@@ -338,7 +345,7 @@ export default {
 <style lang="less" scoped>
   .comboList{
     .table_container{
-      padding:0 40px;
+      padding:0 20px;
       min-height:660px;
     }
     .Pagination{
