@@ -10,6 +10,11 @@ export function clearNull (str) {
 }
 //判断一个字符串中是否只有数字
 export function allNumber (str) {
+  let reg = /^[0-9]+[.]*[0-9]+$/
+  return reg.test(str)
+}
+//判断一个字符串中是否只有整数
+export function allNumbertwo(str) {
   let reg = /^[0-9]+$/
   return reg.test(str)
 }
@@ -21,7 +26,8 @@ export function checkvehicleCode (str) {
 //验证手机号
 export function checkCellphone(str) {
   let string = str.replace(/(^\s*)|(\s*$)/g, '')
-  let reg = /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$/
+  // let reg = /^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0-9]))\d{8}$/
+  let reg = /^1(([3|4|5|8][0-9])|99|76|66)\d{8}$/
   return reg.test(string)
 }
 //验证身份证号
@@ -38,7 +44,7 @@ export function addressStr (arr) {
   }
   return str
 }
-let storage = window.localStorage
+let storage = window.sessionStorage
 //本地存储用户名和密码
 export function getUser () {
   return storage['User']

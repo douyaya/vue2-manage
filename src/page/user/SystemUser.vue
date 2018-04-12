@@ -10,8 +10,10 @@
         :data="tableData"
         style="width: 100%">
         <el-table-column
-          label="编号"
-          prop="rowNum">
+          label="编号">
+            <template slot-scope="props">
+              <span style="margin-left:20px;">{{props.row.rowNum}}</span>
+            </template>
         </el-table-column>
         <el-table-column
           label="账户名"
@@ -110,7 +112,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-size="15"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="count">
       </el-pagination>
@@ -218,6 +220,7 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
+      this._search()
     },
     //获取套餐数据
     getComboData (pageNo,name) {

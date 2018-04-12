@@ -58,8 +58,9 @@
               @click="handleEdit(scope.$index, scope.row)">修改</el-button>
             <el-button
               size="small"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              :type="scope.row.status === 0 ? 'danger' : 'primary'"
+              @click="handleDelete(scope.$index, scope.row)">
+              {{scope.row.status === 0 ? '禁用' : '启用'}}</el-button>
           </template>
         </el-table-column>
       </el-table>  
@@ -128,7 +129,7 @@ import headTop from '@/components/headTop'
 import Search from '@/components/search'
 import Uploadimg from '@/components/uploadImg'
 import {getComboData,getAllCar,modifyCombo,addCombo,deleteCombo} from '@/api/index.js'
-import {allNumber} from '@/api/utility.js'
+import {allNumber,allNumbertwo} from '@/api/utility.js'
 export default {
   name:'ComboList',
   components:{
@@ -139,6 +140,13 @@ export default {
   data () {
     let validatePass = (rule,value,callback) => {
       if (allNumber(value)){
+        callback()
+      } else {
+        callback(new Error('请输入数字'))
+      }
+    }
+    let validatePasstwo = (rule,value,callback) => {
+      if (allNumbertwo(value)){
         callback()
       } else {
         callback(new Error('请输入数字'))
@@ -158,7 +166,7 @@ export default {
       rules:{
         comboName:[{required: true, message: '请输入套餐名称', trigger: 'blur'}],
         price:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入套餐价格'}],
-        times:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入陪驾次数'}],
+        times:[{validator:validatePasstwo,trigger:'blur'},{required:true,message: '请输入陪驾次数'}],
         everyTime:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入每次陪驾时长'}],
         vehicleModelName:[{required:true,message: '请选择陪驾车型', trigger: 'change'}],
         description:[{required:true,message: '请输入套餐详情', trigger: 'blur'}]
@@ -309,21 +317,24 @@ export default {
         })
       }
     },
-    //删除数据
+    //启用禁用套餐
     handleDelete (index,val) {
       let _this = this
-      this.$confirm('是否确认删除？',{
+      this.$confirm('是否执行该操作？',{
         confirmButtonText:'确定',
         cancelButtonText:'取消',
         type:'warning'
       }).then(() => {
-        let data = {id:val.id}
+        let data = {
+          id:val.id,
+          operateType: val.status === 0 ? 1 : 0
+          }
         deleteCombo(data).then(res => {
           if (res.code === '0') {
             _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
             this.$message({
               type:'success',
-              message:'删除成功'
+              message:'操作成功'
             })
           }
         })

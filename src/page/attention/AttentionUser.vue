@@ -1,7 +1,18 @@
 <template>
   <div class="attention">
     <head-top></head-top>
-    <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search"></search>
+    <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
+      <el-select v-model="attentionStatus" size="small"
+        style="width:100px;margin-left:10px;"
+        @change="selectKind">
+        <el-option
+          v-for="item in attentionList"
+          :key="item.key"
+          :label="item.value"
+          :value="item.key">
+        </el-option>
+      </el-select>
+    </search>
     <div class="table-container">
       <el-table v-loading="load_data"
           element-loading-text="拼命加载中"
@@ -10,13 +21,13 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
-              <el-form-item label="openId" style="width:40%">
+              <!-- <el-form-item label="openId" style="width:40%">
                 <span>{{props.row.openid}}</span>
-              </el-form-item>
-              <el-form-item label="关注时间" style="width:50%">
+              </el-form-item> -->
+              <el-form-item label="关注时间：" style="width:40%">
                 <span>{{props.row.followTime | clearZero}}</span>
               </el-form-item>
-              <el-form-item label="地址" style="width:50%">
+              <el-form-item label="地址：" style="width:50%">
                 <span>{{props.row.driverAddress || props.row.custAddress || ''}}</span>
               </el-form-item>
             </el-form>
@@ -58,7 +69,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-size="15"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="count">
       </el-pagination>
@@ -82,7 +93,14 @@ export default {
       count:0,
       currentPage:1,
       pageSize:15,
-      text:'真实姓名'
+      text:'真实姓名',
+      attentionStatus:3,
+      attentionList:[
+        {key:0,value:'陪驾'},
+        {key:1,value:'客户'},
+        {key:2,value:'未认证'},
+        {key:3,value:'全部'}
+      ]
     }
   },
   filters:{
@@ -101,11 +119,12 @@ export default {
     this.getTableData(1,'')
   },
   methods:{
-    getTableData (pageNo,name) {
+    getTableData (pageNo,name,operateType) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
-        name:name
+        name:name,
+        operateType:operateType
       }
       console.log(data)
       getWxUser(data).then(res => {
@@ -119,10 +138,20 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
+      this._search()
+    },
+    selectKind (val) {
+      console.log(val)
+      console.log(this.attentionStatus)
+      this._search()
     },
     //刷新搜索
     _search () {
-      this.getTableData(this.currentPage,this.$refs.search.searchText)
+      if (this.attentionStatus === 3) {
+        this.getTableData(this.currentPage,this.$refs.search.searchText)
+      } else {
+        this.getTableData(this.currentPage,this.$refs.search.searchText,this.attentionStatus)
+      }
     }
   }
 }

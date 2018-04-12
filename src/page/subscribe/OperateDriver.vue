@@ -89,7 +89,8 @@ export default {
         applyId:this.data.applyId,
         comboOrderId:this.data.comboOrderId,
         driverId:this.radio3,
-        state:'test'
+        state:'hwdrive'
+        // state:'test'
       }
       console.log(data)
       Allot(data).then(res => {

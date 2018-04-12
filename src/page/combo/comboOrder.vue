@@ -40,25 +40,25 @@
             <template slot-scope="props">
               <div>套餐信息</div>
               <el-form label-position="left" inline>
-                <el-form-item label="套餐名称" style="width:20%">
+                <el-form-item label="套餐名称：" style="width:23%">
                   <span>{{ props.row.comboName}}</span>
                 </el-form-item>
-                <el-form-item label="套餐价格" style="width:20%">
+                <el-form-item label="套餐价格：" style="width:23%">
                   <span>{{`￥${props.row.comboPrice}`}}</span>
                 </el-form-item>
-                <el-form-item label="套餐陪驾次数" style="width:20%">
+                <el-form-item label="套餐陪驾次数：" style="width:23%">
                   <span>{{`${props.row.comboDriveTime}次`}}</span>
                 </el-form-item>
-                <el-form-item label="单次陪驾时间" style="width:20%">
+                <el-form-item label="单次陪驾时间：" style="width:23%">
                   <span>{{`${props.row.comboDriveEveryTime}小时`}}</span>
                 </el-form-item>
-                <el-form-item label="陪驾车型" style="width:20%">
+                <el-form-item label="陪驾车型：" style="width:23%">
                   <span>{{ props.row.vehicleModelName}}</span>
                 </el-form-item>
-                <el-form-item label="已使用次数" style="width:20%">
+                <el-form-item label="已使用次数：" style="width:23%">
                   <span>{{ props.row.comboResidueTime}}</span>
                 </el-form-item>
-                <el-form-item label="套餐描述">
+                <el-form-item label="套餐描述：">
                   <span>{{ props.row.comboDesc}}</span>
                 </el-form-item>
               </el-form>
@@ -107,7 +107,7 @@
         <el-pagination
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-size="15"
+          :page-size="pageSize"
           layout="total, prev, pager, next"
           :total="count">
         </el-pagination>

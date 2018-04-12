@@ -10,8 +10,10 @@
         :data="tableData"
         style="width: 100%">
         <el-table-column
-          label="编号" width="100px"
-          prop="rowNum">
+          label="编号" width="100px">
+            <template slot-scope="props">
+              <span style="margin-left:20px;">{{props.row.rowNum}}</span>
+            </template>
         </el-table-column>
         <el-table-column
           label="车牌号"
@@ -61,7 +63,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-size="15"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="count">
       </el-pagination>

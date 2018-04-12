@@ -139,7 +139,7 @@
       <el-pagination
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-size="15"
+        :page-size="pageSize"
         layout="total, prev, pager, next"
         :total="count">
       </el-pagination>

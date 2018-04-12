@@ -40,7 +40,7 @@
               <el-form-item class="item" label="套餐已使用次数：">
                 <span>{{ props.row.comboResidueTime}}</span>
               </el-form-item>
-              <el-form-item class="item" label="套餐价格">
+              <el-form-item class="item" label="套餐价格：">
                 <span>{{`￥${props.row.comboPrice}`}}</span>
               </el-form-item>
               <!-- <el-form-item label="陪驾人">
@@ -55,7 +55,7 @@
               <el-form-item class="item" label="陪驾地点：">
                 <span>{{ props.row.applyAddress}}</span>
               </el-form-item>
-              <el-form-item class="item" label="实际开始时间">
+              <el-form-item class="item" label="实际开始时间：">
                 <span>{{ props.row.driveStartTime}}</span>
               </el-form-item>
               <!-- <el-form-item label="实际结束时间">
@@ -68,17 +68,17 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="约车单号" width="225px"
+          label="约车单号" min-width="100px"
           prop="applyNo">
         </el-table-column>
         <el-table-column 
-          label="客户" width="180px">
+          label="客户">
           <template slot-scope="props">
             <span v-show="props.row.custName">{{props.row.custName+'('+props.row.custPhone+')'}}</span>
           </template>
         </el-table-column>
         <el-table-column 
-          label="陪驾" width="180px">
+          label="陪驾">
           <template slot-scope="props">
             <span v-show="props.row.driverName">{{props.row.driverName+'('+props.row.driverPhone+')'}}</span>
           </template>
@@ -210,6 +210,7 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
+      this._search()
     },
     //刷新或者搜索
     _search () {

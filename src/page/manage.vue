@@ -9,20 +9,20 @@
 						<el-menu-item index="comboList">在售套餐</el-menu-item>
 						<el-menu-item index="comboOrder">套餐订单</el-menu-item>
 					</el-submenu>
-					 <el-submenu index="3">
-						<template slot="title"><i class="iconfont">&#xe62b;</i>车辆管理</template>
-						<el-menu-item index="carList">车辆列表</el-menu-item>
-					</el-submenu>
-					<el-submenu index="4">
-						<template slot="title"><i class="iconfont">&#xe619;</i>陪驾管理</template>
-						<el-menu-item index="driver">陪驾人列表</el-menu-item>
-					</el-submenu>
-					<el-submenu index="5">
+					<el-submenu index="3">
 						<template slot="title"><i class="iconfont">&#xe607;</i>预约订单管理</template>
 						<el-menu-item index="subscribeorder">订单列表</el-menu-item>
 					</el-submenu>
+					 <el-submenu index="4">
+						<template slot="title"><i class="iconfont">&#xe62b;</i>车辆管理</template>
+						<el-menu-item index="carList">车辆列表</el-menu-item>
+					</el-submenu>
+					<el-submenu index="5">
+						<template slot="title"><i class="iconfont">&#xe619;</i>陪驾管理</template>
+						<el-menu-item index="driver">陪驾人列表</el-menu-item>
+					</el-submenu>
 					<el-submenu index="6">
-						<template slot="title"><i class="iconfont">&#xe786;</i>公众号用户管理</template>
+						<template slot="title"><i class="iconfont">&#xe786;</i>关注用户管理</template>
 						<el-menu-item index="attention">关注人列表</el-menu-item>
 					</el-submenu>
 					<el-submenu index="7" v-show="userType === 1">
@@ -40,7 +40,7 @@
   	</div>
 </template>
 <script>
-import {getUser} from '@/api/utility.js'
+import {getUser,setUser} from '@/api/utility.js'
 	export default {
 		data () {
 			return {
@@ -53,8 +53,13 @@ import {getUser} from '@/api/utility.js'
 			}
 		},
 		created () {
-			this.userType = JSON.parse(getUser()).user.userType
-			console.log(this.userType)
+			this.userType = 1
+			let data = getUser()
+			if (data === undefined) {
+				this.$router.push('/')
+			} else {
+				this.userType = JSON.parse(data).user.userType
+			}
 		}
 	}
 </script>
