@@ -62,7 +62,7 @@
                 <span>{{ props.row.driveEndTime}}</span>
               </el-form-item> -->
               <el-form-item class="item" label="客户评价：">
-                <span>{{ props.row.serviceComments}}</span>
+                <span>{{decodeURI(props.row.serviceComments)}}</span>
               </el-form-item>
             </el-form>
           </template>

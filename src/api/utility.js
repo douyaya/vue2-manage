@@ -10,7 +10,7 @@ export function clearNull (str) {
 }
 //判断一个字符串中是否只有数字
 export function allNumber (str) {
-  let reg = /^[0-9]+[.]*[0-9]+$/
+  let reg = /^[0-9]+[.]*[0-9]*$/
   return reg.test(str)
 }
 //判断一个字符串中是否只有整数

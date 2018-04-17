@@ -69,7 +69,7 @@
     <el-dialog
       title="修改套餐信息"
       :visible.sync="dialogVisible"
-      :before-close="handleClose"
+      @close="handleClose('form')"
       width="30%">
       <el-form ref="form" :model="form" :rules="rules" class="form" label-width="80px">
         <el-form-item label="套餐名称" prop="comboName">
@@ -108,7 +108,7 @@
         </el-form-item>
       </el-form>
       <div class="footers">
-        <el-button @click="handleClose">取 消</el-button>
+        <el-button @click="handleClose('form')">取 消</el-button>
         <el-button type="primary" @click="confirmModify('form')">确 定</el-button>
       </div>
     </el-dialog>
@@ -346,7 +346,8 @@ export default {
       this.showImg = false
     },
     //关闭dialog
-    handleClose () {
+    handleClose (formName) {
+      this.$refs[formName].resetFields()
       this.$refs.uploadimg.imgList =[]
       this.dialogVisible = false
     }
