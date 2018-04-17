@@ -42,8 +42,10 @@
           prop="realname">
         </el-table-column>
         <el-table-column
-          label="昵称"
-          prop="nickname">
+          label="昵称">
+          <template slot-scope="props">
+            <span>{{decodeURI(props.row.nickname)}}</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="联系方式"
