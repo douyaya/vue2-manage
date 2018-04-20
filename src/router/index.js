@@ -116,11 +116,15 @@ const router = new Router({
 })
 router.beforeEach((to,from,next) => {
  	if (to.meta.requiresAuth) {
-		let data = JSON.parse(getUser())
-		if (data.login) {
-			next()
+		if (getUser() !== undefined) {
+			let data = JSON.parse(getUser())
+			if (data.login) {
+				next()
+			} else {
+				next({ path: '/' })
+			}
 		} else {
-			next({path:'/'})
+			next({ path: '/' })
 		}
  	} else {
 		 next()

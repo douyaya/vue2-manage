@@ -53,7 +53,6 @@ import {getUser,setUser} from '@/api/utility.js'
 			}
 		},
 		created () {
-			this.userType = 1
 			let data = getUser()
 			if (data === undefined) {
 				this.$router.push('/')
