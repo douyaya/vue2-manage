@@ -3,8 +3,8 @@
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
       <div style="display:flex;" slot="province" v-if="value !== 0">
-        <el-input @keyup.enter.native="_search" size="small" class="text" placeholder="陪驾人姓名" v-model="drivername"></el-input>
-        <el-input @keyup.enter.native="_search" size="small" class="text" placeholder="陪驾人手机号" v-model="driverphone"></el-input>
+        <el-input @keyup.enter.native="_search" size="small" class="text" placeholder="陪驾师姓名" v-model="drivername"></el-input>
+        <el-input @keyup.enter.native="_search" size="small" class="text" placeholder="陪驾师手机号" v-model="driverphone"></el-input>
       </div>
       <el-select size="small" style="margin-left:5px;width:100px" v-model="value" 
         @change="selectChange" placeholder="请选择">

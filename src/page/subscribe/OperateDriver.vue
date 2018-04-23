@@ -20,7 +20,7 @@
     </div>
     <!-- 选人页面 -->
     <div class="dialog">
-      <div class="title">可分配陪驾人</div>
+      <div class="title">可分配陪驾师</div>
       <el-radio-group @change="getOrder" class="modify" v-model="radio3">
         <el-radio-button v-for="(value,index) in driverList" :key="index" :label="value.id">
           <div>{{`姓名：${value.name}`}}</div>

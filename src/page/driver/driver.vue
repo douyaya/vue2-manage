@@ -38,7 +38,7 @@
           prop="rowNum">
           </el-table-column>
         <el-table-column
-          label="陪驾人姓名"
+          label="陪驾师姓名"
           prop="name">
         </el-table-column>
         <el-table-column
@@ -70,7 +70,7 @@
       width="30%"
       :before-close="handleClose">
       <el-form ref="form" :model="form" :rules="rules" class="form" label-width="110px">
-        <el-form-item label="陪驾人姓名" prop="name">
+        <el-form-item label="陪驾师姓名" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
         <el-form-item label="联系方式" prop="cellphone">
@@ -275,7 +275,7 @@ export default {
     //添加数据
     addDate () {
       this.dialogVisible = true
-      this.title = "添加陪驾人"
+      this.title = "添加陪驾师"
     },
     //页码改变时触发
     handleCurrentChange (val) {

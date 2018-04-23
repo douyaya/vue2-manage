@@ -65,7 +65,7 @@ const router = new Router({
 				path: '/driver',
 				component: Driver,
 				meta: {
-					title: ['陪驾人员管理', '陪驾人列表'],
+					title: ['陪驾师员管理', '陪驾师列表'],
 					requiresAuth: true
 				}
 			},
@@ -97,7 +97,7 @@ const router = new Router({
 				path: '/operateDriver',
 				component: OperateDriver,
 				meta: {
-					title: ['分配陪驾人'],
+					title: ['分配陪驾师'],
 					requiresAuth: true
 				}
 			},
