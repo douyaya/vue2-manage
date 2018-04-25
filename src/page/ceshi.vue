@@ -6,10 +6,7 @@ fffffffffffffffffffff
 <script>
 import {allNumber} from '@/api/utility.js'
 export default {
-  name:'',
-  created() {
-    console.log(allNumber('555'))
-  }
+  name:''
 }
 </script>
 <style lang="less" scoped>

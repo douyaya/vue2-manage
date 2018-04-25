@@ -188,7 +188,6 @@ export default {
       getComboData(data).then(res => {
         if (res.code === '0') {
           this.comboData = getComboName(res.data.results)
-          console.log(this.comboData)
         }
       })
     },
@@ -210,7 +209,6 @@ export default {
     //图标参数
     dramLine () {
       let myChart = this.$echarts.init(document.getElementById('myChart'))
-      console.log(myChart.setOption)
       myChart.setOption({
         tooltip : {
           trigger: 'axis'

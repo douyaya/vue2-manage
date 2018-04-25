@@ -169,7 +169,6 @@ export default {
             type:'warning'
           }).then(() => {
             let data = _this.form
-            console.log(data)
             addCar(data).then(res => {
               if (res.code === '0') {
                 _this.dialogVisible = false

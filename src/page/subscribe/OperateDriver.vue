@@ -55,7 +55,6 @@ export default {
   },
   created () {
     this.data = JSON.parse(this.$route.query.data)
-    console.log(this.data)
     this._allotDriver()
   },
   methods:{
@@ -76,7 +75,6 @@ export default {
       let data = {
         driverId:val
       }
-      console.log(data)
       getDriverOrder(data).then(res => {
         if (res.code === '0') {
           this.orderList = res.data
@@ -92,7 +90,6 @@ export default {
         state:'hwdrive'
         // state:'test'
       }
-      console.log(data)
       Allot(data).then(res => {
         if (res.code === '0') {
           this.$router.back()

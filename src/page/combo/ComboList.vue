@@ -251,18 +251,15 @@ export default {
             })
           } else {
             if (this.form.picUrl === '' || this.form.picUrl === undefined) {
-              console.log('gg')
               let item = {
                 status:0,
                 picUrl:this.$refs.uploadimg.imgList[0]
               }
-              console.log(this.form.picList)
               if (this.form.picList[0] && this.form.picList[0].id) {
                 this.form.picList[1] = item
               } else {
                 this.form.picList[0] = item
               }
-              // console.log(this.form)
             } 
             this.submit()
           }
@@ -289,7 +286,6 @@ export default {
               _this.dialogVisible = false
               _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
               _this.showImg = false
-              console.log(_this.showImg)
               _this.$message({
                 type:'success',
                 message:'操作成功'

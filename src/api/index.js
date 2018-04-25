@@ -95,3 +95,15 @@ export function login (data) {
 export function modifyPwd (data) {
   return http.post('/pwd/modify.do',data)
 }
+//获取陪驾师审核列表分页
+export function getApplyList (data) {
+  return http.post('/driver/getAllDriverApplys.do',data)
+}
+//获取申请图片
+export function getApplyImg (data) {
+  return http.post('/driver/getPic.do',data)
+}
+//操作申请陪驾单
+export function operateApply (data) {
+  return http.post('/driver/examineApply.do', data)
+}

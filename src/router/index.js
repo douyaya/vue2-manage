@@ -9,6 +9,7 @@ const ComboList = r => require.ensure([], () => r(require('@/page/combo/ComboLis
 const ComboOrder = r => require.ensure([], () => r(require('@/page/combo/ComboOrder')), 'ComboOrder');
 const CarList = r => require.ensure([], () => r(require('@/page/car/CarList')), 'CarList');
 const Driver = r => require.ensure([], () => r(require('@/page/driver/Driver')), 'Driver');
+const ApplyDriver = r => require.ensure([], () => r(require('@/page/driver/applyDriver')), 'ApplyDriver');
 const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe/SubscribeOrder')), 'SubscribeOrder');
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
@@ -66,6 +67,14 @@ const router = new Router({
 				component: Driver,
 				meta: {
 					title: ['陪驾师员管理', '陪驾师列表'],
+					requiresAuth: true
+				}
+			},
+			{
+				path: '/applyDriver',
+				component: ApplyDriver,
+				meta: {
+					title: ['陪驾师管理', '陪驾师申请'],
 					requiresAuth: true
 				}
 			},

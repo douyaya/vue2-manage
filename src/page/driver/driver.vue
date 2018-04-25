@@ -341,7 +341,6 @@ export default {
         _this.$refs[formName].validate((valid) => {
           if (valid) {
             _this.form.address = addressStr(_this.form.selectedOptions)
-            console.log(_this.form)
             addDriver(_this.form).then(res => {
               if (res.code === '0') {
                 _this.$refs['form'].resetFields()
@@ -359,7 +358,6 @@ export default {
               }
             })
           } else {
-            console.log('error submit!!')
             return false;
           }
         })

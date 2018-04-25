@@ -66,7 +66,6 @@
 									id:res.data.id,
 									userType:res.data.userType
 								}
-								console.log(data)
 								setUser(JSON.stringify(data))
 								this.$message({
 									type:'success',

@@ -264,7 +264,6 @@ export default {
     },
     //重置密码
     setpassword (index,val) {
-      console.log(val)
       this.titles = '修改用户'+val.account+'的密码'
       this.dialogVisibles = true
       this.form1.id = val.id
@@ -310,7 +309,6 @@ export default {
               if (res.code === '0') {
                 _this.$refs[formName].resetFields()
                 _this.dialogVisible = false
-                console.log('kk')
                 _this.getComboData(_this.currentPage,_this.$refs.search.searchText)
                 this.$message({
                   type:'success',

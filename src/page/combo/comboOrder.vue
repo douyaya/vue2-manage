@@ -270,7 +270,6 @@ export default {
         orderNo:orderNo,
         createTime:createTime
       }
-      console.log(data)
       comboPayList (data).then(res => {
         if (res.code === '0') {
           this.load_data = false

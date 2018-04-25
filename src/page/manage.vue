@@ -20,6 +20,7 @@
 					<el-submenu index="5">
 						<template slot="title"><i class="iconfont">&#xe619;</i>陪驾管理</template>
 						<el-menu-item index="driver">陪驾师列表</el-menu-item>
+						<el-menu-item index="applyDriver">陪驾师申请</el-menu-item>
 					</el-submenu>
 					<el-submenu index="6">
 						<template slot="title"><i class="iconfont">&#xe786;</i>关注用户管理</template>

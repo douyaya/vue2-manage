@@ -128,7 +128,6 @@ export default {
         name:name,
         operateType:operateType
       }
-      console.log(data)
       getWxUser(data).then(res => {
         if (res.code === '0') {
           this.count = res.data.totalRecord
@@ -143,8 +142,6 @@ export default {
       this._search()
     },
     selectKind (val) {
-      console.log(val)
-      console.log(this.attentionStatus)
       this._search()
     },
     //刷新搜索
