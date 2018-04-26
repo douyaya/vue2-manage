@@ -289,6 +289,7 @@ export default {
         if (res.code === '0') {
           this.dialogVisible = false
           this.remark = ''
+          this._search()
           this.$message({
             type:'success',
             message:'审核完成'
