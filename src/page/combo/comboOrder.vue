@@ -10,7 +10,6 @@
         <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="客户电话" v-model="cellphone"></el-input>
         <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="套餐名称" v-model="comboName"></el-input>
         <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="订单编号" v-model="orderNo"></el-input>
-        <!-- <el-input class="item" @keyup.enter.native="_search" size="small" placeholder="下单时间" v-model="createTime"></el-input> -->
         <el-date-picker class="item"
           v-model="createTime"
           type="date"
@@ -19,6 +18,14 @@
           @change="handleChange"
           placeholder="选择日期">
         </el-date-picker>
+        <el-select v-model="effectiveType" size="small" class="item" @change="_search">
+          <el-option
+            v-for="item in effectiveList"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
         <el-button type="primary" style="height:29px;margin-left:10px;" size="small" @click="_search">
           <i class="el-icon-search"></i>
         </el-button>
@@ -57,6 +64,12 @@
                 </el-form-item>
                 <el-form-item label="已使用次数：" style="width:23%">
                   <span>{{ props.row.comboResidueTime}}</span>
+                </el-form-item>
+                <el-form-item label="生效日期：" style="width:23%">
+                  <span>{{ props.row.effectiveDate}}</span>
+                </el-form-item>
+                <el-form-item label="失效日期：" style="width:23%">
+                  <span>{{ props.row.expiryDate}}</span>
                 </el-form-item>
                 <el-form-item label="套餐描述：">
                   <span>{{ props.row.comboDesc}}</span>
@@ -98,7 +111,13 @@
           </el-table-column> 
           <el-table-column label="支付状态" prop="payStatus">
             <template slot-scope="scope">
-              <span class="pay" :class="scope.row.payStatus === 0 ? 'paystatus1' : 'paystatus2'">{{scope.row.payStatus | bestatus}}</span>
+              <span class="pay" :class="scope.row.effectiveDate === 0 ? 'paystatus1' : 'paystatus2'">{{scope.row.payStatus | bestatus}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="是否失效" prop="validStatus">
+            <template slot-scope="scope">
+              <span class="status" :class="'status'+scope.row.validStatus">
+                {{scope.row.validStatus === 0 ? '未失效' : '已失效'}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -190,6 +209,12 @@ export default {
       orderNo:'',
       createTime:'',
       value7:'',
+      effectiveList:[
+        {key:'0',value:'未失效'},
+        {key:'1',value:'已失效'},
+        {key:'',value:'全部'}
+      ],
+      effectiveType:'',
       pickerOptions2: {
           shortcuts: [{
             text: '最近一周',
@@ -260,7 +285,7 @@ export default {
       })
     },
     //获取列表数据
-    getTableData (pageNo,name,cellphone,comboName,orderNo,createTime) {
+    getTableData (pageNo,name,cellphone,comboName,orderNo,createTime,effectiveType) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
@@ -268,7 +293,8 @@ export default {
         cellphone:cellphone,
         comboName:comboName,
         orderNo:orderNo,
-        createTime:createTime
+        createTime:createTime,
+        operateType:effectiveType
       }
       comboPayList (data).then(res => {
         if (res.code === '0') {
@@ -281,16 +307,20 @@ export default {
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this.getTableData(val,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime)
+      this.getTableData(val,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime,this.effectiveType)
     },
     //搜索
     _search () {
-      this.getTableData(this.currentPage,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime)
+      this.getTableData(this.currentPage,this.name,this.cellphone,this.comboName,this.orderNo,this.createTime,this.effectiveType)
     }
   }
 }
 </script>
 <style lang="less" scoped>
+@white:white;
+@green:rgb(32, 238, 32);
+@grey:rgb(167, 159, 159);
+@blue:blue;
   .comboorder{
     .nav{
       display:flex;
@@ -314,14 +344,24 @@ export default {
     .table-container{
       padding:0 20px;
       min-height:660px;
+      .status{
+        color:@white;
+        padding:2px;
+        &.status0{
+          background:@blue;
+        }
+        &.status1{
+          background:@grey;
+        }
+      }
       .pay{
-        color:white;
+        color:@white;
         padding:1px;
         &.paystatus1{
-          background:rgb(32, 238, 32); 
+          background:@grey; 
         }
         &.paystatus2{
-          background:rgb(167, 159, 159);
+          background:@green;
         }
       }
     }

@@ -304,10 +304,6 @@ export default {
     },
     //改变图片大小
     changemanify (e) {
-      // this.imgList[index].magnify = !this.imgList[index].magnify
-      // console.log(this.imgList)
-      // console.log( e.target.getAttribute('class'))
-      console.log(e.target.getAttribute('class') )
       if (e.target.getAttribute('class') === 'base') {
          e.target.setAttribute('class','big')
       } else {

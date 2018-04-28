@@ -2,6 +2,14 @@
   <div class="comboList">
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
+      <el-select slot="province" v-model="effectiveType" style="width:100px;margin-right:10px;" size="small" @change="_search">
+          <el-option
+            v-for="item in effectiveLists"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
       <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
@@ -18,6 +26,12 @@
               <el-form-item label="套餐详情" style="width:50%">
                 <span>{{ props.row.description}}</span>
               </el-form-item>
+              <!-- <el-form-item label="套餐生效日期：" style="width:40%">
+                <span>{{ props.row.effectiveDate}}</span>
+              </el-form-item>
+              <el-form-item label="套餐失效日期：" style="width:50%">
+                <span>{{ props.row.description}}</span>
+              </el-form-item> -->
             </el-form>
           </template>
         </el-table-column>
@@ -50,6 +64,11 @@
         <el-table-column
           label="车型"
           prop="vehicleModelName">
+        </el-table-column>
+        <el-table-column label="有效期">
+            <template slot-scope="prop"> 
+              <span>{{prop.row.termOfValidity === 0 ? '无限期' : (`${prop.row.termOfValidity}个月`)}}</span>
+            </template>
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
@@ -91,6 +110,16 @@
               :key="item.vehicleModelName"
               :label="item.vehicleModelName"
               :value="item.vehicleModelName">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="有效时间" prop="termOfValidity">
+          <el-select style="width:100%;" v-model="form.termOfValidity" placeholder="请选择">
+            <el-option
+              v-for="item in effectiveList"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key">
             </el-option>
           </el-select>
         </el-form-item>
@@ -161,6 +190,20 @@ export default {
       load_data:true, //是否在加载数据
       dialogVisible:false, //弹出修改窗口
       carList:[],
+      effectiveList:[
+        {key:'3',value:'3个月'},
+        {key:'6',value:'6个月'},
+        {key:'12',value:'12个月'},
+        {key:'0',value:'不限期'}
+      ],
+      effectiveLists:[
+        {key:'3',value:'3个月'},
+        {key:'6',value:'6个月'},
+        {key:'12',value:'12个月'},
+        {key:'0',value:'不限期'},
+        {key:'',value:'全部'}
+      ],
+      effectiveType:'',
       form:{},              //修改数据,
       showImg:false,
       rules:{
@@ -169,12 +212,14 @@ export default {
         times:[{validator:validatePasstwo,trigger:'blur'},{required:true,message: '请输入陪驾次数'}],
         everyTime:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入每次陪驾时长'}],
         vehicleModelName:[{required:true,message: '请选择陪驾车型', trigger: 'change'}],
-        description:[{required:true,message: '请输入套餐详情', trigger: 'blur'}]
-      }
+        description:[{required:true,message: '请输入套餐详情', trigger: 'blur'}],
+        termOfValidity:[{required:true,message: '请选择有效期', trigger: 'blur'}]
+      },
+      picUrl:''
     }
   },
   created () {
-    this._getComboData(1,'')
+    this._getComboData(1,'','')
     this._getAllCar()
   },
   methods:{
@@ -187,11 +232,12 @@ export default {
       })
     },
     //获取套餐数据
-    _getComboData (pageNo,name) {
+    _getComboData (pageNo,name,operateType) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
-        name:name
+        name:name,
+        operateType:operateType
       }
       getComboData(data).then(res => {
         if (res.code === '0') {
@@ -203,21 +249,23 @@ export default {
     },
     //搜索或者刷新
     _search () {
-      this._getComboData(this.currentPage,this.$refs.search.searchText)
+      this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType)
     },
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this._getComboData(val,this.$refs.search.searchText)
+      this._getComboData(val,this.$refs.search.searchText,this.effectiveType)
     },
      //修改数据
     handleEdit (index,val) {
       this.$refs.uploadimg && (this.$refs.uploadimg.imgList = [])
       val.picUrl !== "" && (this.showImg = true)
       this.form = val
+      this.form.termOfValidity = '' + this.form.termOfValidity
       this.dialogVisible = true
       this.form.picList = []
       if (this.form.picId) {
+        this.picUrl = this.form.picUrl
         this.form.picList[0] = {}
         this.form.picList[0].id = this.form.picId
         this.form.picList[0].status = 1
@@ -225,7 +273,7 @@ export default {
     },
      //添加数据
     addDate () {
-      this.form= {}
+      this.form= {termOfValidity:'3'}
       this.$refs.uploadimg && (this.$refs.uploadimg.imgList = [])
       this.form.picList = []
       this.dialogVisible = true
@@ -260,6 +308,8 @@ export default {
               } else {
                 this.form.picList[0] = item
               }
+            } else {
+              this.form.picList = []
             } 
             this.submit()
           }
@@ -284,7 +334,7 @@ export default {
           modifyCombo(this.form).then(res => {
             if (res.code === '0') {
               _this.dialogVisible = false
-              _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
+              _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
               _this.showImg = false
               _this.$message({
                 type:'success',
@@ -303,7 +353,7 @@ export default {
           addCombo(this.form).then(res => {
             if (res.code === '0') {
               _this.dialogVisible = false
-              _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
+              _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
               _this.$message({
                 type:'success',
                 message:'操作成功'
@@ -327,7 +377,7 @@ export default {
           }
         deleteCombo(data).then(res => {
           if (res.code === '0') {
-            _this._getComboData(_this.currentPage,_this.$refs.search.searchText)
+            _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
             this.$message({
               type:'success',
               message:'操作成功'
