@@ -73,10 +73,9 @@
             <div>{{scope.row.gender |beGender}}</div>
           </template>
         </el-table-column>
-        <!--错的 --> 
         <el-table-column
           label="申请日期" min-width="120px"
-          prop="examineDate">
+          prop="applyDate">
         </el-table-column>
         <el-table-column label="审核状态" min-width="120px">
           <template slot-scope="scope">
@@ -88,7 +87,7 @@
             <el-button :disabled="scope.row.examineStatus !== 0"
               size="small"
               type="primary"
-              @click="applydecide(scope.row.id)">审核</el-button>
+              @click="applydecide(scope.row)">审核</el-button>
           </template>
         </el-table-column>
       </el-table>  
@@ -217,6 +216,7 @@ export default {
       dialogVisible:false,
       remark:'',
       driverId:'',
+      id:'',
       userId:'',
       imgList:[]
     }
@@ -275,14 +275,16 @@ export default {
     //审核
     applydecide (val) {
       this.dialogVisible = true
-      this.driverId = val
+      this.driverId = val.id
+      this.id = val.examineId
     },
     _operateApply (val) {
       let data = {
-        id:this.driverId,
+        driverId:this.driverId,
         userId:this.userId,
         operateType:val,
-        remark:this.remark
+        remark:this.remark,
+        id:this.id
       }
       console.log(data)
       operateApply(data).then(res => {

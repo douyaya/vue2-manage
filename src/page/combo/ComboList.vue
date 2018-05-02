@@ -393,8 +393,9 @@ export default {
     },
     //关闭dialog
     handleClose (formName) {
-      this.$refs[formName].resetFields()
-      this.$refs.uploadimg.imgList =[]
+      this._search()
+      // this.$refs[formName].resetFields()
+      // this.$refs.uploadimg.imgList =[]
       this.dialogVisible = false
     }
   }
