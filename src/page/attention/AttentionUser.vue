@@ -21,9 +21,6 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
-              <!-- <el-form-item label="openId" style="width:40%">
-                <span>{{props.row.openid}}</span>
-              </el-form-item> -->
               <el-form-item label="关注时间：" style="width:40%">
                 <span>{{props.row.followTime | clearZero}}</span>
               </el-form-item>
@@ -38,8 +35,10 @@
           prop="rowNum">
         </el-table-column>
         <el-table-column
-          label="真实姓名"
-          prop="realname">
+          label="头像">
+          <template slot-scope="props">
+            <img class="avatar" :src="props.row.headimgurl" alt="" srcset="">
+          </template>
         </el-table-column>
         <el-table-column
           label="昵称">
@@ -48,8 +47,18 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="真实姓名"
+          prop="realname">
+        </el-table-column>
+        <el-table-column
           label="联系方式"
           prop="cellphone">
+        </el-table-column>
+        <el-table-column
+          label="性别">
+          <template slot-scope="props">
+            <span>{{props.row | begender}}</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="认证状态">
@@ -60,9 +69,11 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="性别">
+          label="关注状态">
           <template slot-scope="props">
-            <span>{{props.row | begender}}</span>
+            <span class="status" :class="props.row.followStatus ===-1 ? 'status2' : (props.row.followStatus === 0 ? 'status3' : 'status1')">
+              {{props.row.followStatus === -1 ? '未关注' : (props.row.followStatus === 0 ? '已关注' : '已取关')}}
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -174,6 +185,10 @@ export default {
         &.status3{
           background-color:green;
         }
+      }
+      .avatar{
+        width:40px;
+        height:40px;
       }
     }
     .Pagination{

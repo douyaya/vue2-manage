@@ -57,8 +57,10 @@
               @click="handleEdit(scope.$index, scope.row)">修改</el-button> -->
             <el-button
               size="small"
-              type="danger"
-              @click="handleDelete(scope.row.id)">删除</el-button>
+              :type="scope.row.status === 0 ? 'danger' : 'primary'"
+              @click="handleDelete(scope.row)">
+              {{scope.row.status === 0 ? '禁用' : '启用'}}
+              </el-button>
           </template>
         </el-table-column>
       </el-table>  
@@ -300,13 +302,14 @@ export default {
     //删除数据
     handleDelete (val) {
       let _this = this
-      this.$confirm('确认删除该陪驾？',{
+      this.$confirm('确认进行该操作？',{
         confirmButtonText:'确定',
         cancelButtonText:'取消',
         type:'warning'
       }).then(() => {
         let data = {
-          id:val
+          id:val.id,
+          operateType:val.status === 0 ? 1 : 0
         }
         deleteDrive(data).then(res => {
           if (res.code === '0') {
@@ -314,12 +317,12 @@ export default {
             _this._search()
             _this.$message({
               type:'success',
-              message:'删除成功'
+              message:'操作成功'
             })
           } else {
             _this.$message({
               type:'info',
-              message:'删除失败'
+              message:'操作失败'
             })
           }
         })
