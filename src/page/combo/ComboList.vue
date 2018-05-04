@@ -266,9 +266,8 @@ export default {
       this.form.picList = []
       if (this.form.picId) {
         this.picUrl = this.form.picUrl
-        this.form.picList[0] = {}
-        this.form.picList[0].id = this.form.picId
-        this.form.picList[0].status = 1
+        // this.form.picList[0].id = this.form.picId
+        // this.form.picList[0].status = 1
       }
     },
      //添加数据
@@ -288,31 +287,65 @@ export default {
               this.form.vModelId = tmp.id
             }
           }
-          let length = this.$refs.uploadimg.imgList.length
-          if (this.form.id && this.form.picUrl !== "") {
-            length++
-          }
-          if (length !== 1) {
-            this.$message({
-              type:'info',
-              message:'必须上传一张图片'
-            })
+          if (this.form.id) {
+            //修改
+            let imgList = this.$refs.uploadimg.imgList
+            console.log(this.form.picUrl)
+            console.log(this.form.picId)
+            if (this.form.picUrl !== '') {
+              imgList.push({
+                id:this.form.picId,
+                status:1,
+                picUrl:this.form.picUrl
+              })
+            }
+            console.log(imgList)
+            // if (imgList.length !== 1) {
+            //   this.$message({
+            //     type:'info',
+            //     message:'必须上传一张图片'
+            //   })
+            // } else {
+
+            // }
           } else {
-            if (this.form.picUrl === '' || this.form.picUrl === undefined) {
-              let item = {
-                status:0,
-                picUrl:this.$refs.uploadimg.imgList[0]
-              }
-              if (this.form.picList[0] && this.form.picList[0].id) {
-                this.form.picList[1] = item
-              } else {
-                this.form.picList[0] = item
-              }
+            //添加
+            if (this.$refs.uploadimg.imgList.length !== 1) {
+              this.$message({
+                type:'info',
+                message:'必须上传一张图片'
+              })
             } else {
-              this.form.picList = []
-            } 
-            this.submit()
+              this.form.picList = JSON.stringify(this.$refs.uploadimg.imgList)
+              console.log(this.form)
+              this._addCombo()
+            }
           }
+          // let length = this.$refs.uploadimg.imgList.length
+          // if (this.form.id && this.form.picUrl !== "") {
+          //   length++
+          // }
+          // if (length !== 1) {
+          //   this.$message({
+          //     type:'info',
+          //     message:'必须上传一张图片'
+          //   })
+          // } else {
+          //   if (this.form.picUrl === '' || this.form.picUrl === undefined) {
+          //     let item = {
+          //       status:0,
+          //       picUrl:this.$refs.uploadimg.imgList[0]
+          //     }
+          //     if (this.form.picList[0] && this.form.picList[0].id) {
+          //       this.form.picList[1] = item
+          //     } else {
+          //       this.form.picList[0] = item
+          //     }
+          //   } else {
+          //     this.form.picList = []
+          //   } 
+          //   this.submit()
+          // }
         } else {
           this.$message({
             type:'info',
@@ -322,46 +355,65 @@ export default {
       })
     },
     //修改和添加
-    submit () {
-      let _this = this
-      if (this.form.id) {
-        this.$confirm('是否确认执行该操作？',{
-          confirmButtonText:'确定',
-          cancelButtonText:'取消',
-          type:'warning'
-        }).then(() => {
-          this.form.picList = JSON.stringify(this.form.picList)
-          modifyCombo(this.form).then(res => {
-            if (res.code === '0') {
-              _this.dialogVisible = false
-              _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
-              _this.showImg = false
-              _this.$message({
-                type:'success',
-                message:'操作成功'
-              })
-            }
-          })
+    // submit () {
+    //   let _this = this
+    //   if (this.form.id) {
+    //     this.$confirm('是否确认执行该操作？',{
+    //       confirmButtonText:'确定',
+    //       cancelButtonText:'取消',
+    //       type:'warning'
+    //     }).then(() => {
+    //       this.form.picList = JSON.stringify(this.form.picList)
+    //       modifyCombo(this.form).then(res => {
+    //         if (res.code === '0') {
+    //           _this.dialogVisible = false
+    //           _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
+    //           _this.showImg = false
+    //           _this.$message({
+    //             type:'success',
+    //             message:'操作成功'
+    //           })
+    //         }
+    //       })
+    //     })
+    //   } else {
+    //     this.$confirm('是否确认执行该操作？',{
+    //       confirmButtonText:'确定',
+    //       cancelButtonText:'取消',
+    //       type:'warning'
+    //     }).then(() => {
+    //       this.form.picList = JSON.stringify(this.form.picList)
+    //       addCombo(this.form).then(res => {
+    //         if (res.code === '0') {
+    //           _this.dialogVisible = false
+    //           _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
+    //           _this.$message({
+    //             type:'success',
+    //             message:'操作成功'
+    //           })
+    //         }
+    //       })
+    //     })
+    //   }
+    // },
+    //添加套餐
+    _addCombo () {
+      this.$confirm('是否确认添加该套餐？',{
+        confirmButtonText:'确定',
+        cancelButtonText:'取消',
+        type:'warning'
+      }).then(() => {
+        addCombo(this.form).then(res => {
+          if (res.code === '0') {
+            this.dialogVisible = false
+            this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType)
+            this.$message({
+              type:'success',
+              message:'添加成功'
+            })
+          }
         })
-      } else {
-        this.$confirm('是否确认执行该操作？',{
-          confirmButtonText:'确定',
-          cancelButtonText:'取消',
-          type:'warning'
-        }).then(() => {
-          this.form.picList = JSON.stringify(this.form.picList)
-          addCombo(this.form).then(res => {
-            if (res.code === '0') {
-              _this.dialogVisible = false
-              _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
-              _this.$message({
-                type:'success',
-                message:'操作成功'
-              })
-            }
-          })
-        })
-      }
+      })
     },
     //启用禁用套餐
     handleDelete (index,val) {
