@@ -76,8 +76,8 @@ export function getSubscribeOrder (data) {
   return http.post('/order/getAllApply.do',data)
 }
 //获取可用陪驾人员
-export function allotDriver () {
-  return http.post('/driver/getDrivers.do')
+export function allotDriver (data) {
+  return http.post('/driver/getDrivers.do',data)
 }
 //陪驾人id查询订单
 export function getDriverOrder (data) {

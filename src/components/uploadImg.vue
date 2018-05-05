@@ -37,8 +37,8 @@ export default {
         let fd = new FormData(form)
         axios({
           method: 'post',
-          // url: 'http://pjxmgr.howelliot.com:8080/evdrive_web/file/picUpload.do',
-          url: 'http://192.168.1.106:8084/file/picUpload.do',
+          url: 'http://pjxmgr.howelliot.com:8080/evdrive_web/file/picUpload.do',
+          // url: 'http://192.168.1.106:8084/file/picUpload.do',
           data: fd
         }).then(res => {
           if (res.data.code === '0') {

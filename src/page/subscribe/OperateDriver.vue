@@ -54,13 +54,17 @@ export default {
     }
   },
   created () {
-    this.data = JSON.parse(this.$route.query.data)
     this._allotDriver()
   },
   methods:{
     //获取陪驾人信息
     _allotDriver () {
-      allotDriver().then(res => {
+      this.data = JSON.parse(this.$route.query.data)
+      let workArea = this.data.applyAddress.slice(0,this.data.applyAddress.lastIndexOf(' '))
+      let data = {
+        workArea:workArea
+      }
+      allotDriver(data).then(res => {
         if (res.code === '0') {
           this.driverList = res.data
           this.radio3 = res.data[0].id
@@ -87,8 +91,8 @@ export default {
         applyId:this.data.applyId,
         comboOrderId:this.data.comboOrderId,
         driverId:this.radio3,
-        // state:'hwdrive'
-        state:'test'
+        state:'hwdrive'
+        // state:'test'
       }
       Allot(data).then(res => {
         if (res.code === '0') {

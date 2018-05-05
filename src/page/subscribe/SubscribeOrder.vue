@@ -61,8 +61,11 @@
               <!-- <el-form-item label="实际结束时间">
                 <span>{{ props.row.driveEndTime}}</span>
               </el-form-item> -->
-              <el-form-item class="item" label="客户评价：">
-                <span>{{decodeURI(props.row.serviceComments)}}</span>
+              <el-form-item style="width:100%" label="客户评价：">
+                <span>{{decodeURI(props.row.custServiceComments)}}</span>
+              </el-form-item>
+              <el-form-item label="陪驾师评价：">
+                <span>{{decodeURI(props.row.driverServiceComments)}}</span>
               </el-form-item>
             </el-form>
           </template>
