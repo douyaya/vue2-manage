@@ -2,7 +2,8 @@
   <div class="comboList">
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-select slot="province" v-model="effectiveType" style="width:100px;margin-right:10px;" size="small" @change="_search">
+      <div slot="province">
+        <el-select v-model="effectiveType" style="width:100px;margin-right:10px;" size="small" @change="_search">
           <el-option
             v-for="item in effectiveLists"
             :key="item.key"
@@ -10,6 +11,15 @@
             :value="item.key">
           </el-option>
         </el-select>
+        <el-select v-model="status" style="width:80px;margin-right:10px;" size="small" @change="_search">
+          <el-option
+            v-for="item in statusLists"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
+      </div>
       <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
     </search>
     <div class="table_container">
@@ -26,18 +36,16 @@
               <el-form-item label="套餐详情" style="width:50%">
                 <span>{{ props.row.description}}</span>
               </el-form-item>
-              <!-- <el-form-item label="套餐生效日期：" style="width:40%">
-                <span>{{ props.row.effectiveDate}}</span>
-              </el-form-item>
-              <el-form-item label="套餐失效日期：" style="width:50%">
-                <span>{{ props.row.description}}</span>
-              </el-form-item> -->
             </el-form>
           </template>
         </el-table-column>
         <el-table-column
           label="编号"
           prop="rowNum">
+        </el-table-column>
+        <el-table-column
+          label="排序号"
+          prop="sortColumn">
         </el-table-column>
         <el-table-column
           label="套餐名称"
@@ -50,7 +58,19 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="套餐价格">
+          label="原价">
+          <template slot-scope="prop">
+            <span>{{`￥${prop.row.originalPrice}`}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="折扣">
+          <template slot-scope="prop">
+            <span>{{`${prop.row.agio}%`}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="折后价">
           <template slot-scope="prop">
             <span>{{`￥${prop.row.price}`}}</span>
           </template>
@@ -91,11 +111,20 @@
       @close="handleClose('form')"
       width="30%">
       <el-form ref="form" :model="form" :rules="rules" class="form" label-width="80px">
+        <el-form-item label="排序号" prop="sortColumn">
+          <el-input v-model="form.sortColumn"></el-input>
+        </el-form-item>
         <el-form-item label="套餐名称" prop="comboName">
           <el-input v-model="form.comboName"></el-input>
         </el-form-item>
-        <el-form-item label="套餐价格" prop="price">
-          <el-input v-model="form.price"></el-input>
+        <el-form-item label="原价" prop="originalPrice">
+          <el-input v-model="form.originalPrice"></el-input>
+        </el-form-item>
+        <el-form-item label="折扣(%)" prop="agio">
+          <el-input v-model="form.agio"></el-input>
+        </el-form-item>
+        <el-form-item label="折后价">
+          <el-input readonly :value="form.agio*form.originalPrice/100"></el-input>
         </el-form-item>
         <el-form-item label="陪驾次数" prop="times">
           <el-input v-model="form.times"></el-input>
@@ -208,18 +237,28 @@ export default {
       showImg:false,
       rules:{
         comboName:[{required: true, message: '请输入套餐名称', trigger: 'blur'}],
-        price:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入套餐价格'}],
+        originalPrice:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入套餐价格'}],
         times:[{validator:validatePasstwo,trigger:'blur'},{required:true,message: '请输入陪驾次数'}],
         everyTime:[{validator:validatePass,trigger:'blur'},{required:true,message: '请输入每次陪驾时长'}],
         vehicleModelName:[{required:true,message: '请选择陪驾车型', trigger: 'change'}],
         description:[{required:true,message: '请输入套餐详情', trigger: 'blur'}],
-        termOfValidity:[{required:true,message: '请选择有效期', trigger: 'blur'}]
+        termOfValidity:[{required:true,message: '请选择有效期', trigger: 'blur'}],
+        agio:[{validator:validatePass,trigger:'blur'}],
+        sortColumn:[{validator:validatePasstwo,trigger:'blur'},{required:true,message: '请输入排序号'}]
       },
-      picUrl:''
+      picUrl:'',
+      // imgList:[],
+      length:0,
+      status:'',
+      statusLists:[
+        {key:0,value:'启用'},
+        {key:1,value:'禁用'},
+        {key:'',value:'全部'}
+      ]
     }
   },
   created () {
-    this._getComboData(1,'','')
+    this._getComboData(1,'','','')
     this._getAllCar()
   },
   methods:{
@@ -232,12 +271,13 @@ export default {
       })
     },
     //获取套餐数据
-    _getComboData (pageNo,name,operateType) {
+    _getComboData (pageNo,name,operateType,status) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
         name:name,
-        operateType:operateType
+        operateType:operateType,
+        status:status
       }
       getComboData(data).then(res => {
         if (res.code === '0') {
@@ -249,12 +289,12 @@ export default {
     },
     //搜索或者刷新
     _search () {
-      this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType)
+      this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType,this.status)
     },
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this._getComboData(val,this.$refs.search.searchText,this.effectiveType)
+      this._getComboData(val,this.$refs.search.searchText,this.effectiveType,this.status)
     },
      //修改数据
     handleEdit (index,val) {
@@ -263,16 +303,20 @@ export default {
       this.form = val
       this.form.termOfValidity = '' + this.form.termOfValidity
       this.dialogVisible = true
-      this.form.picList = []
+      this.form.picList = ''
       if (this.form.picId) {
         this.picUrl = this.form.picUrl
-        // this.form.picList[0].id = this.form.picId
-        // this.form.picList[0].status = 1
       }
+      // this.imgList = []
+      // this.imgList.push({
+      //   id:this.form.picId,
+      //   status:1,
+      //   picUrl:this.form.picUrl
+      // })
     },
      //添加数据
     addDate () {
-      this.form= {termOfValidity:'3'}
+      this.form= {termOfValidity:'3',sortColumn:1000}
       this.$refs.uploadimg && (this.$refs.uploadimg.imgList = [])
       this.form.picList = []
       this.dialogVisible = true
@@ -289,25 +333,25 @@ export default {
           }
           if (this.form.id) {
             //修改
-            let imgList = this.$refs.uploadimg.imgList
-            console.log(this.form.picUrl)
-            console.log(this.form.picId)
-            if (this.form.picUrl !== '') {
-              imgList.push({
-                id:this.form.picId,
-                status:1,
-                picUrl:this.form.picUrl
+            this.length = (this.picUrl === '' ? 0 : 1)
+            let imglength = this.$refs.uploadimg.imgList.length
+            this.length += imglength
+            console.log(this.length)
+            if (this.length !== 1) {
+              this.$message({
+                type:'info',
+                message:'必须上传一张图片'
               })
+            } else {
+              if (this.picUrl === '') {
+                let imgList = [
+                  {status:1,id:this.form.picId},
+                  {status:0,picUrl:this.$refs.uploadimg.imgList[0]}
+                ]
+                this.form.picList = JSON.stringify(imgList)
+              }
+              this._modifyCombo()
             }
-            console.log(imgList)
-            // if (imgList.length !== 1) {
-            //   this.$message({
-            //     type:'info',
-            //     message:'必须上传一张图片'
-            //   })
-            // } else {
-
-            // }
           } else {
             //添加
             if (this.$refs.uploadimg.imgList.length !== 1) {
@@ -317,35 +361,9 @@ export default {
               })
             } else {
               this.form.picList = JSON.stringify(this.$refs.uploadimg.imgList)
-              console.log(this.form)
               this._addCombo()
             }
           }
-          // let length = this.$refs.uploadimg.imgList.length
-          // if (this.form.id && this.form.picUrl !== "") {
-          //   length++
-          // }
-          // if (length !== 1) {
-          //   this.$message({
-          //     type:'info',
-          //     message:'必须上传一张图片'
-          //   })
-          // } else {
-          //   if (this.form.picUrl === '' || this.form.picUrl === undefined) {
-          //     let item = {
-          //       status:0,
-          //       picUrl:this.$refs.uploadimg.imgList[0]
-          //     }
-          //     if (this.form.picList[0] && this.form.picList[0].id) {
-          //       this.form.picList[1] = item
-          //     } else {
-          //       this.form.picList[0] = item
-          //     }
-          //   } else {
-          //     this.form.picList = []
-          //   } 
-          //   this.submit()
-          // }
         } else {
           this.$message({
             type:'info',
@@ -354,48 +372,25 @@ export default {
         }
       })
     },
-    //修改和添加
-    // submit () {
-    //   let _this = this
-    //   if (this.form.id) {
-    //     this.$confirm('是否确认执行该操作？',{
-    //       confirmButtonText:'确定',
-    //       cancelButtonText:'取消',
-    //       type:'warning'
-    //     }).then(() => {
-    //       this.form.picList = JSON.stringify(this.form.picList)
-    //       modifyCombo(this.form).then(res => {
-    //         if (res.code === '0') {
-    //           _this.dialogVisible = false
-    //           _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
-    //           _this.showImg = false
-    //           _this.$message({
-    //             type:'success',
-    //             message:'操作成功'
-    //           })
-    //         }
-    //       })
-    //     })
-    //   } else {
-    //     this.$confirm('是否确认执行该操作？',{
-    //       confirmButtonText:'确定',
-    //       cancelButtonText:'取消',
-    //       type:'warning'
-    //     }).then(() => {
-    //       this.form.picList = JSON.stringify(this.form.picList)
-    //       addCombo(this.form).then(res => {
-    //         if (res.code === '0') {
-    //           _this.dialogVisible = false
-    //           _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
-    //           _this.$message({
-    //             type:'success',
-    //             message:'操作成功'
-    //           })
-    //         }
-    //       })
-    //     })
-    //   }
-    // },
+    _modifyCombo () {
+      this.$confirm('是否确认修改该套餐？',{
+        confirmButtonText:'确定',
+        cancelButtonText:'取消',
+        type:'warning'
+      }).then(() => {
+        modifyCombo(this.form).then(res => {
+          if (res.code === '0') {
+            this.dialogVisible = false
+            this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType,this.status)
+            this.showImg = false
+            this.$message({
+              type:'success',
+              message:'修改成功'
+            })
+          }
+        })
+      })
+    },
     //添加套餐
     _addCombo () {
       this.$confirm('是否确认添加该套餐？',{
@@ -406,7 +401,7 @@ export default {
         addCombo(this.form).then(res => {
           if (res.code === '0') {
             this.dialogVisible = false
-            this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType)
+            this._getComboData(this.currentPage,this.$refs.search.searchText,this.effectiveType,this.status)
             this.$message({
               type:'success',
               message:'添加成功'
@@ -429,7 +424,7 @@ export default {
           }
         deleteCombo(data).then(res => {
           if (res.code === '0') {
-            _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType)
+            _this._getComboData(_this.currentPage,_this.$refs.search.searchText,this.effectiveType,this.status)
             this.$message({
               type:'success',
               message:'操作成功'
@@ -440,14 +435,13 @@ export default {
     },
     //操作图片
     operateImage () {
-      this.form.picUrl = ""
+      this.length -- 
+      this.picUrl = ''
       this.showImg = false
     },
     //关闭dialog
     handleClose (formName) {
       this._search()
-      // this.$refs[formName].resetFields()
-      // this.$refs.uploadimg.imgList =[]
       this.dialogVisible = false
     }
   }
