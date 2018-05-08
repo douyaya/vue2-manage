@@ -41,11 +41,6 @@
 				}
 			}
 		},
-		// created () {
-		// 	// if (getUser() !== undefined) {
-		// 	// 	this.loginForm = JSON.parse(getUser()).user
-		// 	// } 
-		// },
 		methods: {
 			async submitForm(formName) {
 				let _this = this
