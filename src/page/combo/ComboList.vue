@@ -307,12 +307,6 @@ export default {
       if (this.form.picId) {
         this.picUrl = this.form.picUrl
       }
-      // this.imgList = []
-      // this.imgList.push({
-      //   id:this.form.picId,
-      //   status:1,
-      //   picUrl:this.form.picUrl
-      // })
     },
      //添加数据
     addDate () {
@@ -336,7 +330,6 @@ export default {
             this.length = (this.picUrl === '' ? 0 : 1)
             let imglength = this.$refs.uploadimg.imgList.length
             this.length += imglength
-            console.log(this.length)
             if (this.length !== 1) {
               this.$message({
                 type:'info',

@@ -17,8 +17,7 @@
     <div class="table_container">
       <el-table v-loading="load_data"
           element-loading-text="拼命加载中"
-          :data="tableData"
-          @expand="expandChange">
+          :data="tableData">
           <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline>
@@ -50,7 +49,7 @@
                 <span>{{props.row.workNo}}</span>
               </el-form-item>
               <div>
-                <img class="base" v-for="(tmp,index) of imgList" :key="index" :src="tmp.picUrl"
+                <img class="base" v-for="(tmp,index) of props.row.imgList" :key="index" :src="tmp"
                  @click="changemanify">
               </div>
             </el-form>
@@ -237,16 +236,6 @@ export default {
     this.userId = JSON.parse(getUser()).user.id
   },
   methods:{
-    //点击展开获取申请图片
-    expandChange (val) {
-      getApplyImg({id:val.id}).then(res => {
-        this.imgList = res.data
-        this.imgList.forEach(item => {
-          item.magnify = false
-        })
-        console.log(this.imgList)
-      })
-    },
     //获取分页数据
     _getApplyList (pageNo,statusType,name,cellphone) {
       let data = {
@@ -260,6 +249,11 @@ export default {
         if (res.code === '0') {
           this.load_data = false
           this.tableData = res.data.results
+          this.tableData.forEach(item => {
+            item.imgList = []
+            item.imgList = item.picStr.split(',')
+          })
+          console.log(this.tableData)
           this.count = res.data.totalRecord
         }
       })
@@ -286,21 +280,14 @@ export default {
         remark:this.remark,
         id:this.id
       }
-      console.log(data)
       operateApply(data).then(res => {
         if (res.code === '0') {
           this.dialogVisible = false
           this.remark = ''
           this._search()
-          this.$message({
-            type:'success',
-            message:'审核完成'
-          })
+          alert('审核完成')
         } else {
-          this.$message({
-            type:'warn',
-            message:'操作失败，请重试'
-          })
+          alert('审核失败')
         }
       })
     },
