@@ -107,3 +107,6 @@ export function getApplyImg (data) {
 export function operateApply (data) {
   return http.post('/driver/examineApply.do', data)
 }
+export function getRecommend (data) {
+  return http.post('',data)
+}

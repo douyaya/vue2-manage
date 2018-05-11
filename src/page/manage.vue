@@ -25,6 +25,7 @@
 					<el-submenu index="6">
 						<template slot="title"><i class="iconfont">&#xe786;</i>关注用户管理</template>
 						<el-menu-item index="attention">关注人列表</el-menu-item>
+						<el-menu-item index="recommend">推荐信息管理</el-menu-item>
 					</el-submenu>
 					<el-submenu index="7" v-show="userType === 1">
 						<template slot="title"><i class="iconfont">&#xe619;</i>系统用户管理</template>

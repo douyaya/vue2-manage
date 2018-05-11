@@ -2,16 +2,36 @@
   <div class="attention">
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-select v-model="attentionStatus" size="small"
-        style="width:100px;margin-left:10px;"
-        @change="selectKind">
-        <el-option
-          v-for="item in attentionList"
-          :key="item.key"
-          :label="item.value"
-          :value="item.key">
-        </el-option>
-      </el-select>
+      <div slot="province">
+        <el-select v-model="isattention" size="small"
+          style="width:100px;margin-left:5px;"
+          @change="_search">
+          <el-option
+            v-for="item in attentionType"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-select v-model="attentionStatus" size="small"
+          style="width:100px;margin:0 10px;"
+          @change="_search">
+          <el-option
+            v-for="item in attentionList"
+            :key="item.key"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
+        <el-date-picker style="width:130px; margin-right:10px;"
+          v-model="attentionTime"
+          type="date"
+          size="small"
+          value-format="yyyy-MM-dd"
+          @change="handleChange"
+          placeholder="选择日期">
+        </el-date-picker>
+      </div>
     </search>
     <div class="table-container">
       <el-table v-loading="load_data"
@@ -108,12 +128,22 @@ export default {
       pageSize:15,
       text:'真实姓名',
       attentionStatus:3,
+      ///////////////////////////////////////////////////////////////////////////////////////////////
+      // 获取分页的方法还没有添加关注取关的类型条件和关注时间
+      //关注、非关注、全部
+      isattention:2,
+      attentionType:[
+        {key:0,value:'关注'},
+        {key:1,value:'取关'},
+        {key:2,value:'全部'}
+      ],
       attentionList:[
         {key:0,value:'陪驾'},
         {key:1,value:'客户'},
         {key:2,value:'未认证'},
         {key:3,value:'全部'}
-      ]
+      ],
+      attentionTime:''
     }
   },
   filters:{
@@ -147,12 +177,13 @@ export default {
         }
       })
     },
+    handleChange(val){
+      this.attentionTime = val
+      this._search()
+    },
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this._search()
-    },
-    selectKind (val) {
       this._search()
     },
     //刷新搜索

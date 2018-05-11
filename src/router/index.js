@@ -12,6 +12,7 @@ const Driver = r => require.ensure([], () => r(require('@/page/driver/Driver')),
 const ApplyDriver = r => require.ensure([], () => r(require('@/page/driver/applyDriver')), 'ApplyDriver');
 const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe/SubscribeOrder')), 'SubscribeOrder');
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
+const Recommend = r => require.ensure([], () => r(require('@/page/attention/Recommend')), 'Recommend');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
 const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
 const ModifyPwd = r => require.ensure([], () => r(require('@/page/user/ModifyPwd')), 'ModifyPwd');
@@ -91,6 +92,14 @@ const router = new Router({
 				component: AttentionUser,
 				meta: {
 					title: ['公众号用户管理', '关注人列表'],
+					requiresAuth: true
+				}
+			},
+			{
+				path: '/recommend',
+				component: Recommend,
+				meta: {
+					title: ['公众号用户管理', '推荐信息管理'],
 					requiresAuth: true
 				}
 			},
