@@ -34,15 +34,17 @@ export default {
       let arr = ['png', 'jpg', 'jpeg', 'gif', 'psd', 'eps']
       if (arr.indexOf(type) !== -1) {
         let form = document.getElementById("orderimg")
+        console.log(form)
         let fd = new FormData(form)
         axios({
           method: 'post',
-          // url: 'http://pjxmgr.howelliot.com:8080/evdrive_web/file/picUpload.do',
-          url: 'http://192.168.1.106:8084/file/picUpload.do',
+          url: 'http://pjxmgr.howelliot.com:8080/evdrive_web/file/picUpload.do',
+          // url: 'http://192.168.1.106:8084/file/picUpload.do',
           data: fd
         }).then(res => {
           if (res.data.code === '0') {
             self.imgList.push(res.data.data[0])
+            document.getElementById("image").value = ''
           } else {
             alert('上传失败')
           }
@@ -77,7 +79,7 @@ export default {
           }
           .close{
             position: absolute;
-            top:-10px;
+            top:40px;
             background:lightpink;
             width:20px;
             height:20px;

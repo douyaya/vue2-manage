@@ -58,6 +58,9 @@
               <el-form-item class="item" label="实际开始时间：">
                 <span>{{ props.row.driveStartTime}}</span>
               </el-form-item>
+              <el-form-item class="item" label="紧急电话">
+                <span>{{ props.row.emergencyPhone}}</span>
+              </el-form-item>
               <!-- <el-form-item label="实际结束时间">
                 <span>{{ props.row.driveEndTime}}</span>
               </el-form-item> -->

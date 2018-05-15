@@ -1,7 +1,7 @@
 // 获取图片类型
 export function typeofimg(file) {
   let name = file.name
-  let index = name.indexOf('.')
+  let index = name.lastIndexOf('.')
   return name.slice(index + 1)
 }
 //去除前后空格

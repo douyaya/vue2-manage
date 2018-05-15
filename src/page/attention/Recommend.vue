@@ -2,10 +2,6 @@
   <div class="recommend">
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
-      <div slot="province">
-        <el-input style="width:120px;margin-right:10px;"
-         @keyup.enter.native="_search" size="small" placeholder="电话" v-model="phone"></el-input>
-      </div>
     </search>
     <div class="table-container">
       <el-table v-loading="load_data"
@@ -17,29 +13,25 @@
           prop="rowNum">
         </el-table-column>
         <el-table-column
-          label="真实姓名"
-          prop="realname">
-        </el-table-column>
-        <el-table-column
-          label="联系方式"
-          prop="cellphone">
+          label="昵称"
+          prop="fromName">
         </el-table-column>
         <el-table-column
           label="推荐关注人数"
-          prop="cellphone">
+          prop="followCount">
         </el-table-column>
         <el-table-column
           label="推荐认证人数"
-          prop="cellphone">
+          prop="authCount">
         </el-table-column>
         <el-table-column
           label="推荐购买人数"
-          prop="cellphone">
+          prop="buyCount">
         </el-table-column>
         <el-table-column
-          label="金额">
+          label="金额合计">
           <template slot-scope="props">
-            <span>{{`￥${props.row.price}`}}</span>
+            <span>{{`￥${props.row.buyAmountCount}`}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -58,7 +50,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
-// import {getRecommend} from '@/api/index.js'
+import {getRecommend} from '@/api/index.js'
 export default {
   name:'Recommend',
   components:{
@@ -68,36 +60,30 @@ export default {
   data () {
     return {
       tableData:[],
-      load_data:false,
+      load_data:true,
       count:0,
       currentPage:1,
       pageSize:15,
-      text:'推荐人姓名',
-      phone:''
+      text:'推荐人微信昵称'
     }
-  },
-  filters:{
-   
   },
   created () {
     this.getTableData(1,'')
   },
   methods:{
-    getTableData (pageNo,name,operateType) {
+    getTableData (pageNo,name) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
-        name:name,
-        operateType:operateType
+        name:name
       }
-      console.log(data)
-      // getRecommend(data).then(res => {
-      //   if (res.code === '0') {
-      //     this.count = res.data.totalRecord
-      //     this.tableData = res.data.results
-      //     this.load_data = false
-      //   }
-      // })
+      getRecommend(data).then(res => {
+        if (res.code === '0') {
+          this.count = res.data.totalRecord
+          this.tableData = res.data.results
+          this.load_data = false
+        }
+      })
     },
     //页码改变时触发
     handleCurrentChange (val) {
@@ -106,11 +92,7 @@ export default {
     },
     //刷新搜索
     _search () {
-      if (this.attentionStatus === 3) {
-        this.getTableData(this.currentPage,this.$refs.search.searchText)
-      } else {
-        this.getTableData(this.currentPage,this.$refs.search.searchText,this.attentionStatus)
-      }
+      this.getTableData(this.currentPage,this.$refs.search.searchText)
     }
   }
 }

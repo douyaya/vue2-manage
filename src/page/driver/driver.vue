@@ -2,7 +2,27 @@
   <div class="driver">
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
-      <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button>
+    <div slot="province">
+      <el-select v-model="isenable" style="width:100px;margin-right:10px;" 
+        size="small" @change="_search">
+        <el-option
+          v-for="item in enableList"
+          :key="item.key"
+          :label="item.value"
+          :value="item.key">
+        </el-option>
+      </el-select>
+      <el-select v-model="isTrain" style="width:120px;margin-right:10px;" 
+        size="small" @change="_search">
+        <el-option
+          v-for="item in trainList"
+          :key="item.key"
+          :label="item.value"
+          :value="item.key">
+        </el-option>
+      </el-select>
+    </div>
+      <!-- <el-button @click="addDate" size="mini" type="primary"><i class="el-icon-plus"></i> 添加数据</el-button> -->
     </search>
     <div class="table_container">
       <el-table v-loading="load_data"
@@ -50,12 +70,19 @@
             <div>{{scope.row.gender |beGender}}</div>
           </template>
         </el-table-column>
+        <el-table-column label="培训状态">
+          <template slot-scope="scope">
+            <el-button
+              size="small"
+              :type="scope.row.trainStatus === -1 ? 'primary' : (scope.row.trainStatus === 0 ? 'success' : 'danger')"
+              @click="handleTrain(scope.row)">
+              {{scope.row.trainStatus === -1 ? '未培训' : (scope.row.trainStatus === 0 ? '通过' : '未通过')}}
+              </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <!-- <el-button
-              size="small"
-              @click="handleEdit(scope.$index, scope.row)">修改</el-button> -->
-            <el-button
+            <el-button  v-show="scope.row.trainStatus===0"
               size="small"
               :type="scope.row.status === 0 ? 'danger' : 'primary'"
               @click="handleDelete(scope.row)">
@@ -136,6 +163,11 @@
         <el-button type="primary" @click="confirmModify('form')">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="改学员是否通过陪驾师培训？"
+      :visible.sync="trainThrough" style="text-align:center;">
+        <el-button type="primary" @click="_operateTrain(0)">通过</el-button> 
+        <el-button type="danger" @click="_operateTrain(1)">不通过</el-button> 
+    </el-dialog> 
     <!-- 分页 -->
     <div class="Pagination">
       <el-pagination
@@ -151,7 +183,7 @@
 <script>
 import headTop from '@/components/headTop'
 import Search from '@/components/search'
-import {getDriver,addDriver,deleteDrive} from '@/api/index.js'
+import {getDriver,addDriver,deleteDrive,modifyTrain} from '@/api/index.js'
 import * as address from '@/api/address'
 import {checkId,checkCellphone,addressStr} from '@/api/utility.js'
 const licenseData = [
@@ -218,6 +250,20 @@ export default {
         workNo:'',
         licenseType:0
       },
+      isenable:'',
+      enableList:[
+        {key:'',value:'全部'},
+        {key:'0',value:'启用'},
+        {key:'1',value:'禁用'}
+      ],
+      isTrain:'',
+      trainList:[
+        {key:'',value:'全部'},
+        {key:'-1',value:'未培训'},
+        {key:'0',value:'培训通过'},
+        {key:'1',value:'培训不通过'}
+      ],
+      trainThrough:false,
       rules:{
         name:[{required:true,message:'请输入姓名',trigger:'blur'}],
         cellphone:[
@@ -232,7 +278,6 @@ export default {
         workNo:[{required:true,message:'请输入工作证',trigger:'blur'}],
         selectedOptions:[
           {type:'array',required:true,message:'请选择家庭地址',trigger:'blur'}
-          // {validator: validateAddress, trigger: 'blur'}
         ],
         birthday:[{required:true,message:'请选择出生日期',trigger:'blur'}],
         licenseTime:[{required:true,message:'请选择申请驾照日期',trigger:'blur'}],
@@ -245,7 +290,8 @@ export default {
       pageSize:15,
       title:'',
       options:[],
-      licenseList:licenseData
+      licenseList:licenseData,
+      driverId:''
     }
   },
   filters:{
@@ -260,10 +306,31 @@ export default {
     }
   },
   created () {
-    this.getComboData(1,'')
+    this.getComboData(1,'','','')
     this.options = address.address
   },
   methods:{
+    //培训状态
+    handleTrain (val) {
+      this.trainThrough = true
+      this.driverId = val.id
+    },
+    _operateTrain (operateType) {
+      let data = {
+        id:this.driverId,
+        operateType:operateType
+      }
+      modifyTrain(data).then(res => {
+        if (res.code === '0') {
+          this.trainThrough = false
+          this._search()
+          this.$message({
+            type:'success',
+            message:'操作成功'
+          })
+        }
+      })  
+    },
     dateChangebirthday1 (val) {
       this.form.birthday = val
     },
@@ -272,24 +339,26 @@ export default {
     },
     //搜索
     _search () {
-      this.getComboData(this.currentPage,this.$refs.search.searchText)
+      this.getComboData(this.currentPage,this.$refs.search.searchText,this.isenable,this.isTrain)
     },
     //添加数据
-    addDate () {
-      this.dialogVisible = true
-      this.title = "添加陪驾师"
-    },
+    // addDate () {
+    //   this.dialogVisible = true
+    //   this.title = "添加陪驾师"
+    // },
     //页码改变时触发
     handleCurrentChange (val) {
       this.currentPage = val
-      this.getComboData(val,this.$refs.search.searchText)
+      this._search()
     },
     //获取套餐数据
-    getComboData (pageNo,name) {
+    getComboData (pageNo,name,status,operateType) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
-        name:name
+        name:name,
+        status:status,
+        operateType:operateType
       }
       getDriver(data).then(res => {
         if (res.code === '0') {
@@ -347,7 +416,7 @@ export default {
             addDriver(_this.form).then(res => {
               if (res.code === '0') {
                 _this.$refs['form'].resetFields()
-                _this.getComboData(_this.currentPage,_this.$refs.search.searchText)
+                _this._search()
                 this.dialogVisible = false
                 this.$message({
                   type:'success',

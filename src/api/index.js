@@ -108,5 +108,9 @@ export function operateApply (data) {
   return http.post('/driver/examineApply.do', data)
 }
 export function getRecommend (data) {
-  return http.post('',data)
+  return http.post('/recommend/countWx.do',data)
+}
+//修改培训状态
+export function modifyTrain (data) {
+  return http.post('/driver/trainDriver.do',data)
 }

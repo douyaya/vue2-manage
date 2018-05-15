@@ -128,14 +128,11 @@ export default {
       pageSize:15,
       text:'真实姓名',
       attentionStatus:3,
-      ///////////////////////////////////////////////////////////////////////////////////////////////
-      // 获取分页的方法还没有添加关注取关的类型条件和关注时间
-      //关注、非关注、全部
-      isattention:2,
+      isattention:'',
       attentionType:[
-        {key:0,value:'关注'},
-        {key:1,value:'取关'},
-        {key:2,value:'全部'}
+        {key:'0',value:'关注'},
+        {key:'1',value:'取关'},
+        {key:'',value:'全部'}
       ],
       attentionList:[
         {key:0,value:'陪驾'},
@@ -159,15 +156,17 @@ export default {
     }
   },
   created () {
-    this.getTableData(1,'')
+    this.getTableData(1,'','','','')
   },
   methods:{
-    getTableData (pageNo,name,operateType) {
+    getTableData (pageNo,name,operateType,status,createTime) {
       let data = {
         pageNo:pageNo,
         pageSize:this.pageSize,
         name:name,
-        operateType:operateType
+        operateType:operateType,
+        status:status,
+        createTime:createTime
       }
       getWxUser(data).then(res => {
         if (res.code === '0') {
@@ -189,9 +188,9 @@ export default {
     //刷新搜索
     _search () {
       if (this.attentionStatus === 3) {
-        this.getTableData(this.currentPage,this.$refs.search.searchText)
+        this.getTableData(this.currentPage,this.$refs.search.searchText,'',this.isattention,this.attentionTime)
       } else {
-        this.getTableData(this.currentPage,this.$refs.search.searchText,this.attentionStatus)
+        this.getTableData(this.currentPage,this.$refs.search.searchText,this.attentionStatus,this.isattention,this.attentionTime)
       }
     }
   }

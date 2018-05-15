@@ -49,8 +49,10 @@
                 <span>{{props.row.workNo}}</span>
               </el-form-item>
               <div>
-                <img class="base" v-for="(tmp,index) of props.row.imgList" :key="index" :src="tmp"
-                 @click="changemanify">
+                <div>单击放大图片</div>
+                <div class="image" v-for="(tmp,index) of props.row.imgList" :key="index">
+                  <img class="base" :src="tmp" @click="changemanify">
+                </div>
               </div>
             </el-form>
           </template>
@@ -278,7 +280,9 @@ export default {
         userId:this.userId,
         operateType:val,
         remark:this.remark,
-        id:this.id
+        id:this.id,
+        state:'hwdrive'
+        // state:'test'
       }
       operateApply(data).then(res => {
         if (res.code === '0') {
@@ -294,11 +298,29 @@ export default {
     //改变图片大小
     changemanify (e) {
       if (e.target.getAttribute('class') === 'base') {
-         e.target.setAttribute('class','big')
+        e.target.setAttribute('class','big')
       } else {
         e.target.setAttribute('class','base')
       }
     }
+    //单击时旋转
+    // translate (e) {
+    //   console.log(e)
+    //   let parentNode = e.parentNode
+    //   // let chilcrens = parentNode.childNodes
+    //   console.log()
+    //   if (e.target.style.transform === '') {
+    //     e.target.style.transform = 'rotate('+ 90 +'deg)'
+    //   } else {
+    //     let str = e.target.style.transform
+    //     let start = str.indexOf('(')
+    //     let end = str.indexOf('d')
+    //     let deg = str.slice(start + 1 , end)
+    //     deg = Number(deg) + 90
+    //     e.target.style.transform = 'rotate('+ deg +'deg)'
+    //     deg === 360 && (deg = 0) 
+    //   }
+    // }
   }
 }
 </script>
@@ -327,18 +349,29 @@ export default {
           background:@grey;
         }
       }
+      .image{
+        display:inline-block;
+        position:relative;
+      }
       .base{
         height:100px;
         margin:0 10px;
         cursor: pointer;
         transition: all 0.5s;
       }
+      .translate{
+        position:absolute;
+        bottom:0;
+        right:0;
+        width:15px;
+        cursor:pointer;
+      }
       .big{
         height:310px;
         cursor: pointer;
-        position: absolute;
-        top:0;
-        left:30%;
+        // position: absolute;
+        // top:0;
+        // left:30%;
         transition: all 1s;
         // z-index:500;
       }
