@@ -13,10 +13,10 @@ const ApplyDriver = r => require.ensure([], () => r(require('@/page/driver/apply
 const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe/SubscribeOrder')), 'SubscribeOrder');
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
 const Recommend = r => require.ensure([], () => r(require('@/page/attention/Recommend')), 'Recommend');
+const Integraldetail = r => require.ensure([], () => r(require('@/page/attention/Integraldetail')), 'Integraldetail');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
 const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
 const ModifyPwd = r => require.ensure([], () => r(require('@/page/user/ModifyPwd')), 'ModifyPwd');
-
 const router = new Router({
 	routes : [
 	{
@@ -104,6 +104,14 @@ const router = new Router({
 				}
 			},
 			{
+				path: '/integraldetail',
+				components: Integraldetail,
+				meta: {
+					title: ['积分'],
+					requiresAuth: true
+				}
+			},
+			{
 				path: '/system',
 				component: SystemUser,
 				meta: {
@@ -132,20 +140,20 @@ const router = new Router({
 ]
 	// strict: process.env.NODE_ENV !== 'production',
 })
-router.beforeEach((to,from,next) => {
- 	if (to.meta.requiresAuth) {
-		if (getUser() !== undefined) {
-			let data = JSON.parse(getUser())
-			if (data.login) {
-				next()
-			} else {
-				next({ path: '/' })
-			}
-		} else {
-			next({ path: '/' })
-		}
- 	} else {
-		 next()
-	 }
-})
+// router.beforeEach((to,from,next) => {
+//  	if (to.meta.requiresAuth) {
+// 		if (getUser() !== undefined) {
+// 			let data = JSON.parse(getUser())
+// 			if (data.login) {
+// 				next()
+// 			} else {
+// 				next({ path: '/'})
+// 			}
+// 		} else {
+// 			next({ path: '/'})
+// 		}
+//  	} else {
+// 		 next()
+// 	 }
+// })
 export default router

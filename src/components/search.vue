@@ -8,6 +8,7 @@
       </el-button>
     </form>
     <div class="refresh">
+      <slot name="integral"></slot>
       <el-button type="primary" style="height:29px;" size="small" @click="search">
         <img class="image" src="../assets/img/refresh.png" alt="">
       </el-button>

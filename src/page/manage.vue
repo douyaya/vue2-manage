@@ -26,6 +26,7 @@
 						<template slot="title"><i class="iconfont">&#xe786;</i>关注用户管理</template>
 						<el-menu-item index="attention">关注人列表</el-menu-item>
 						<el-menu-item index="recommend">推荐信息管理</el-menu-item>
+						<el-menu-item index="integraldetail">关注详情</el-menu-item>
 					</el-submenu>
 					<el-submenu index="7" v-show="userType === 1">
 						<template slot="title"><i class="iconfont">&#xe619;</i>系统用户管理</template>
@@ -55,12 +56,12 @@ import {getUser,setUser} from '@/api/utility.js'
 			}
 		},
 		created () {
-			let data = getUser()
-			if (data === undefined) {
-				this.$router.push('/')
-			} else {
-				this.userType = JSON.parse(data).user.userType
-			}
+			// let data = getUser()
+			// if (data === undefined) {
+			// 	this.$router.push('/')
+			// } else {
+			// 	this.userType = JSON.parse(data).user.userType
+			// }
 		}
 	}
 </script>

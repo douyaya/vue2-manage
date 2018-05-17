@@ -1,5 +1,8 @@
 <template>
   <div class="attention">
+    <router-link :to="{ path: '/integraldetail' }" tag="span">
+      45
+    </router-link>
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
       <div slot="province">
@@ -31,6 +34,9 @@
           @change="handleChange"
           placeholder="选择日期">
         </el-date-picker>
+      </div>
+      <div slot="integral" style="margin-right:25px;">
+        当前发放积分总额：
       </div>
     </search>
     <div class="table-container">
@@ -78,6 +84,16 @@
           label="性别">
           <template slot-scope="props">
             <span>{{props.row | begender}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="积分">
+          <template slot-scope="props">
+            <!-- <router-link :to="{path:'/integralDetail',query:{id:props.row}}" tag="span"> -->
+            <router-link :to="{ path: '/integralDetail' }" tag="span">
+              <!-- {{props.row.integral}} -->
+              45
+            </router-link>
           </template>
         </el-table-column>
         <el-table-column
