@@ -1,8 +1,5 @@
 <template>
   <div class="attention">
-    <router-link :to="{ path: '/integraldetail' }" tag="span">
-      45
-    </router-link>
     <head-top></head-top>
     <search v-bind:placeholder="text" v-on:search="_search" ref="search" v-on:refresh="_search">
       <div slot="province">
@@ -36,7 +33,7 @@
         </el-date-picker>
       </div>
       <div slot="integral" style="margin-right:25px;">
-        当前发放积分总额：
+        当前发放积分总额：{{totalIntegral}}
       </div>
     </search>
     <div class="table-container">
@@ -89,11 +86,8 @@
         <el-table-column
           label="积分">
           <template slot-scope="props">
-            <!-- <router-link :to="{path:'/integralDetail',query:{id:props.row}}" tag="span"> -->
-            <router-link :to="{ path: '/integralDetail' }" tag="span">
-              <!-- {{props.row.integral}} -->
-              45
-            </router-link>
+            <!-- <div @click="showIntegral" style="color:blue">{{props.row.totalIntegral}}</div> -->
+            <div style="color:blue">{{props.row.totalIntegral}}</div>
           </template>
         </el-table-column>
         <el-table-column
@@ -123,6 +117,19 @@
         :total="count">
       </el-pagination>
     </div>
+    <el-dialog
+      title="您当前的积分记录为："
+      :visible.sync="dialogVisible"
+      :before-close="handleClose"
+      width="30%">
+      <el-steps direction="vertical" style="min-height:200px">
+        <el-step title="关注公众号  +100"></el-step>
+        <el-step title="认证  +100"></el-step>
+        <el-step title="购买套餐  +100"></el-step>
+        <el-step title="推荐3人关注  +100"></el-step>
+        <el-step title="推荐购买  +100"></el-step>
+      </el-steps>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -138,7 +145,8 @@ export default {
   data () {
     return {
       tableData:[],
-      load_data:true,
+      // load_data:true,
+      load_data:false,
       count:0,
       currentPage:1,
       pageSize:15,
@@ -156,7 +164,9 @@ export default {
         {key:2,value:'未认证'},
         {key:3,value:'全部'}
       ],
-      attentionTime:''
+      attentionTime:'',
+      dialogVisible:false,
+      totalIntegral:''
     }
   },
   filters:{
@@ -188,7 +198,8 @@ export default {
         if (res.code === '0') {
           this.count = res.data.totalRecord
           this.tableData = res.data.results
-          this.load_data = false
+          this.load_data = false,
+          this.totalIntegral = res.data.totalIntegral
         }
       })
     },
@@ -208,6 +219,12 @@ export default {
       } else {
         this.getTableData(this.currentPage,this.$refs.search.searchText,this.attentionStatus,this.isattention,this.attentionTime)
       }
+    },
+    showIntegral() {
+      this.dialogVisible = true
+    },
+    handleClose() {
+      this.dialogVisible = false
     }
   }
 }

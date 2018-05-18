@@ -281,8 +281,8 @@ export default {
         operateType:val,
         remark:this.remark,
         id:this.id,
-        state:'hwdrive'
-        // state:'test'
+        // state:'hwdrive'
+        state:'test'
       }
       operateApply(data).then(res => {
         if (res.code === '0') {

@@ -13,7 +13,6 @@ const ApplyDriver = r => require.ensure([], () => r(require('@/page/driver/apply
 const SubscribeOrder = r => require.ensure([], () => r(require('@/page/subscribe/SubscribeOrder')), 'SubscribeOrder');
 const AttentionUser = r => require.ensure([], () => r(require('@/page/attention/AttentionUser')), 'AttentionUser');
 const Recommend = r => require.ensure([], () => r(require('@/page/attention/Recommend')), 'Recommend');
-const Integraldetail = r => require.ensure([], () => r(require('@/page/attention/Integraldetail')), 'Integraldetail');
 const SystemUser = r => require.ensure([], () => r(require('@/page/user/SystemUser')), 'SystemUser');
 const OperateDriver = r => require.ensure([], () => r(require('@/page/subscribe/OperateDriver')), 'OperateDriver');
 const ModifyPwd = r => require.ensure([], () => r(require('@/page/user/ModifyPwd')), 'ModifyPwd');
@@ -100,14 +99,6 @@ const router = new Router({
 				component: Recommend,
 				meta: {
 					title: ['公众号用户管理', '推荐信息管理'],
-					requiresAuth: true
-				}
-			},
-			{
-				path: '/integraldetail',
-				components: Integraldetail,
-				meta: {
-					title: ['积分'],
 					requiresAuth: true
 				}
 			},
