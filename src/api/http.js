@@ -31,8 +31,8 @@ export default {
   post(url, data) {
     return axios({
       method: 'post',
-      // baseURL: 'http://pjxmgr.howelliot.com:8080/evdrive_web',
-      baseURL: 'http://192.168.1.106:8084',
+      baseURL: 'http://pjxmgr.howelliot.com:8080/evdrive_web',
+      // baseURL: 'http://192.168.1.106:8084',
       url,
       data: qs.stringify(data),
       headers: {
@@ -46,8 +46,8 @@ export default {
   get(url, params) {
     return axios({
       method: 'get',
-      // baseURL: 'http://pjxmgr.howelliot.com:8080/evdrive_web',
-      baseURL: 'http://192.168.1.106:8084',
+      baseURL: 'http://pjxmgr.howelliot.com:8080/evdrive_web',
+      // baseURL: 'http://192.168.1.106:8084',
       url,
       params, // get 请求时带的参数
       headers: {

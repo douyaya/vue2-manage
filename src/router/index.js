@@ -131,20 +131,20 @@ const router = new Router({
 ]
 	// strict: process.env.NODE_ENV !== 'production',
 })
-// router.beforeEach((to,from,next) => {
-//  	if (to.meta.requiresAuth) {
-// 		if (getUser() !== undefined) {
-// 			let data = JSON.parse(getUser())
-// 			if (data.login) {
-// 				next()
-// 			} else {
-// 				next({ path: '/'})
-// 			}
-// 		} else {
-// 			next({ path: '/'})
-// 		}
-//  	} else {
-// 		 next()
-// 	 }
-// })
+router.beforeEach((to,from,next) => {
+ 	if (to.meta.requiresAuth) {
+		if (getUser() !== undefined) {
+			let data = JSON.parse(getUser())
+			if (data.login) {
+				next()
+			} else {
+				next({ path: '/'})
+			}
+		} else {
+			next({ path: '/'})
+		}
+ 	} else {
+		 next()
+	 }
+})
 export default router
