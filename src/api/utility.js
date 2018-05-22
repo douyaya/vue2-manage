@@ -52,6 +52,13 @@ export function getUser () {
 export function setUser (val) {
   storage.setItem('User',val)
 }
+//本地存储待分配订单详情
+export function setoperateOrder (val) {
+  storage.setItem('waitOperateOrder',val)
+}
+export function getoperateOrder() {
+  return storage['waitOperateOrder']
+}
 //只获取套餐名称
 export function getComboName (arr) {
   let arrs = []

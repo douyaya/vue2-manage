@@ -52,18 +52,18 @@
               <el-form-item class="item" label="车牌号：">
                 <span>{{ props.row.vehicleCode}}</span>
               </el-form-item>
-              <el-form-item class="item" label="陪驾地点：">
-                <span>{{ props.row.applyAddress}}</span>
-              </el-form-item>
-              <el-form-item class="item" label="实际开始时间：">
+              <!-- <el-form-item class="item" label="实际开始时间：">
                 <span>{{ props.row.driveStartTime}}</span>
-              </el-form-item>
+              </el-form-item> -->
               <el-form-item class="item" label="紧急电话">
                 <span>{{ props.row.emergencyPhone}}</span>
               </el-form-item>
               <!-- <el-form-item label="实际结束时间">
                 <span>{{ props.row.driveEndTime}}</span>
               </el-form-item> -->
+              <el-form-item label="陪驾地点：">
+                <span>{{ props.row.applyAddress}}</span>
+              </el-form-item>
               <el-form-item style="width:100%" label="客户评价：">
                 <span>{{decodeURI(props.row.custServiceComments)}}</span>
               </el-form-item>
@@ -89,49 +89,22 @@
             <span v-show="props.row.driverName">{{props.row.driverName+'('+props.row.driverPhone+')'}}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column 
-          label="客户姓名" width="100px"
-          prop="custName">
-        </el-table-column>
-        <el-table-column
-          label="客户电话" width="130px"
-          prop="custPhone">
-        </el-table-column> -->
-        <!-- <el-table-column 
-          label="陪驾人" width="100px"
-          prop="driverName">
-        </el-table-column> -->
         <el-table-column v-if="value === 0"
           label="套餐名称" 
           prop="comboName">
         </el-table-column>
-        <!-- <el-table-column
-          label="套餐已使用次数" width="150px">
-          <template slot-scope="props">
-            <span>{{`${props.row.comboResidueTime}次`}}</span>
-          </template>  
-        </el-table-column>
-        <el-table-column
-          label="套餐价格" width="100px">
-          <template slot-scope="props">
-            <span>{{`￥${props.row.comboPrice}`}}</span>
-          </template>  
-        </el-table-column> -->
         <el-table-column
           label="预约开始时间"
           prop="applyPlanTime">
         </el-table-column>
         <el-table-column
-          label="实际开始时间" v-if="value !== 0"
-          prop="driveStartTime">
-        </el-table-column>
-        <el-table-column
           label="实际结束时间" v-if="value !== 0"
           prop="driveEndTime">
         </el-table-column>
-        <!-- <el-form-item label="预约陪驾时间：" style="min-width:250px">
-          <span>{{ props.row.applyPlanTime}}</span>
-        </el-form-item> -->
+        <el-table-column
+          label="实际开始时间" v-if="value !== 0"
+          prop="driveStartTime">
+        </el-table-column>
         <el-table-column
           label="操作" width="80px">
           <template slot-scope="props">
@@ -161,6 +134,7 @@ import Vue from 'vue'
 import headTop from '@/components/headTop'
 import Search from '@/components/search' 
 import {getSubscribeOrder} from '@/api/index.js'
+import {setoperateOrder} from '@/api/utility.js'
 export default {
   name:'SubscribeOrder',
   components:{
@@ -224,7 +198,8 @@ export default {
     },
     //分配陪驾人
     toAllot (val) {
-      this.$router.push({path:'/operateDriver',query:{data:JSON.stringify(val)}})
+      setoperateOrder(JSON.stringify(val))
+      this.$router.push({path:'/operateDriver'})
     }
   }
 }

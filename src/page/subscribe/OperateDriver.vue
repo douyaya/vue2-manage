@@ -59,7 +59,7 @@ export default {
   methods:{
     //获取陪驾人信息
     _allotDriver () {
-      this.data = JSON.parse(this.$route.query.data)
+      this.data = JSON.parse(getoperateOrder())
       let workArea = this.data.applyAddress.slice(0,this.data.applyAddress.lastIndexOf(' '))
       let data = {
         workArea:workArea
