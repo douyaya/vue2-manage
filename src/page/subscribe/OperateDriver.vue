@@ -35,7 +35,6 @@
         </el-card> 
       </div>
       <div class="footers">
-        <!-- <el-button @click="dialogVisible = false">取 消</el-button> -->
         <el-button type="primary" @click="confirmModify">确 定</el-button>
       </div>
     </div>    
@@ -43,6 +42,7 @@
 </template>
 <script>
 import {allotDriver,getDriverOrder,Allot} from '@/api/index.js'
+import {getoperateOrder} from '@/api/utility.js'
 export default {
   name:'OperateDriver',
   data () {
